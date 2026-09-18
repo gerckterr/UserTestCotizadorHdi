@@ -89,6 +89,12 @@ python3 -m http.server 8000
 
 Y abrir `http://localhost:8000/index.html`.
 
+Para probar el flujo completo varias veces seguidas sin ir hasta el final
+cada vez, abre `http://localhost:8000/index.html?dev` — aparece un botón
+flotante "⟲ Reiniciar prueba" en la esquina que borra todo el progreso
+(test + cotizador) y recarga desde cero. Ese botón **no aparece** en el link
+normal que le compartes a los participantes.
+
 ## 4. Publicarlo
 
 Cualquiera de estas tres sirve — son solo la carpeta completa, sin build:

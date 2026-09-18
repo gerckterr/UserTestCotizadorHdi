@@ -155,14 +155,6 @@ h2.done-title {
 }
 .copy-note { font-size: 13px; color: #5A5A5A; margin-top: 10px; text-align: center; }
 .summary-label { font-size: 13px; font-weight: 700; color: #5A5A5A; margin-top: 22px; }
-.btn-reset {
-  background: none; color: #7A7A7A; font-size: 14px; text-decoration: underline; margin-top: 14px; padding: 0;
-}
-.sheets-warning {
-  font-size: 13px; color: #B23A48; margin-top: 10px; text-align: center; display: none;
-}
-.sheets-warning[data-show="true"] { display: block; }
-
 .qwrap { }
 .qwrap .qinner { }
 .sheet-back {

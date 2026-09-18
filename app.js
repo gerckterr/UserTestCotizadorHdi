@@ -131,8 +131,10 @@ function saveLocal() {
 
 function resetAll() {
   try { localStorage.removeItem(KEY); localStorage.removeItem(SID_KEY); } catch (e) {}
-  state = loadState();
-  render();
+  // Recarga la página entera (no solo el estado del test): así el iframe
+  // del cotizador también arranca de cero. Si solo se reseteara el estado
+  // del test, el cotizador se quedaría en la pantalla donde iba antes.
+  location.reload();
 }
 
 let state = loadState();
@@ -214,7 +216,15 @@ function handleScreenUpdate(screen, sig) {
     return;
   }
 
-  if (r > state.rank) state.rank = r;
+  // Importante: solo se vuelve a dibujar si algo realmente cambió. El
+  // postMessage llega en cada cambio de pantalla del cotizador, pero el
+  // polling de respaldo corre cada 700ms sin parar — si aquí siempre se
+  // llamara a render(), le quitaría el foco a cualquier campo de texto que
+  // la persona estuviera llenando en ese momento (aunque no tenga nada que
+  // ver con el cotizador, como el nombre en la intro).
+  let changed = false;
+
+  if (r > state.rank) { state.rank = r; changed = true; }
 
   if (onTask) {
     if (state.taskMaxRank[i] == null || r > state.taskMaxRank[i]) {
@@ -235,10 +245,13 @@ function handleScreenUpdate(screen, sig) {
       return;
     } else if (ok && state.ready !== i) {
       state.ready = i;
+      changed = true;
     }
   }
-  render();
-  saveLocal();
+  if (changed) {
+    render();
+    saveLocal();
+  }
 }
 
 window.addEventListener('message', ev => {
@@ -278,11 +291,35 @@ function screenQs() {
   return { ns: '', qs: [] };
 }
 
+// Deriva qué preguntas están visibles ahora mismo y si falta alguna
+// obligatoria. La usan tanto render() como refreshValidity().
+function computeMissing() {
+  const i = state.i;
+  const isTask = i >= 1 && i <= TASKS.length;
+  const sheetOpen = isTask && state.sheet;
+  const { ns, qs } = screenQs();
+  const questionsVisible = !(isTask && !sheetOpen);
+  const missing = questionsVisible && qs.some(q => !q.optional && !(state.ans[ns + '.' + q.id] || '').trim());
+  return { missing, questionsVisible };
+}
+
+// Actualiza solo el botón "Siguiente"/su nota, sin tocar el resto de la
+// pantalla. Se usa al escribir o elegir una respuesta: un render() completo
+// en cada tecla destruye y vuelve a crear el campo donde la persona está
+// escribiendo, lo que se ve como parpadeo (y, si no se restaura el foco a
+// tiempo, como si el campo no dejara escribir).
+function refreshValidity() {
+  if (el.navbar.style.display === 'none') return;
+  const { missing } = computeMissing();
+  el.btnNext.disabled = missing;
+  el.navNote.textContent = missing ? 'Responde las preguntas para continuar' : '';
+}
+
 function setAnswer(key, val) {
   state.ans[key] = val;
   state.copied = false;
   saveLocal();
-  render();
+  refreshValidity();
 }
 
 function buildSummary() {
@@ -409,7 +446,6 @@ function render() {
       '<h2 class="subtitle">Tu impresión general</h2>' +
       '</div>';
   } else if (isDone) {
-    const summary = buildSummary();
     const failed = state.lastSendOk === false;
     el.paperInner.innerHTML =
       '<div>' +
@@ -418,12 +454,12 @@ function render() {
       '<p class="done-copy">' + (failed
         ? 'No pudimos guardar tus respuestas automáticamente. Por favor, toca el botón para copiarlas y pégalas en el mismo chat donde te compartimos este link.'
         : 'Gracias por tu tiempo. Tus respuestas ya se guardaron automáticamente.') + '</p>' +
-      '<div class="sheets-warning" data-show="' + (failed ? 'true' : 'false') + '">No se pudo confirmar el envío automático. Usa el botón de abajo como respaldo.</div>' +
-      '<button type="button" class="btn btn-copy" id="btnCopy">' + (state.copied ? '¡Copiado! Ya puedes pegarlas' : 'Copiar mis respuestas') + '</button>' +
-      '<div class="copy-note">' + (state.copied ? 'Pégalas en el chat donde te compartimos este link.' : 'Si el botón no funciona, selecciona el texto de abajo y cópialo a mano.') + '</div>' +
-      '<div class="summary-label">Esto es lo que se copia:</div>' +
-      '<textarea class="ta" rows="12" readonly style="margin-top:8px;font-size:13px;line-height:1.5">' + esc(summary) + '</textarea>' +
-      '<button type="button" class="btn-reset" id="btnReset">Borrar y empezar de nuevo</button>' +
+      (failed
+        ? '<button type="button" class="btn btn-copy" id="btnCopy">' + (state.copied ? '¡Copiado! Ya puedes pegarlas' : 'Copiar mis respuestas') + '</button>' +
+          '<div class="copy-note">' + (state.copied ? 'Pégalas en el chat donde te compartimos este link.' : 'Si el botón no funciona, selecciona el texto de abajo y cópialo a mano.') + '</div>' +
+          '<div class="summary-label">Esto es lo que se copia:</div>' +
+          '<textarea class="ta" rows="12" readonly style="margin-top:8px;font-size:13px;line-height:1.5">' + esc(buildSummary()) + '</textarea>'
+        : '') +
       '</div>';
   } else {
     el.paperInner.innerHTML = '';
@@ -452,7 +488,7 @@ function render() {
   const questionsVisible = !(isTask && !sheetOpen);
   renderQuestions(questionsVisible ? qs : [], ns, el.qList);
 
-  const missing = questionsVisible && qs.some(q => !q.optional && !(state.ans[ns + '.' + q.id] || '').trim());
+  const { missing } = computeMissing();
 
   // --- Barra de tarea (botón "Ya terminé" / "Me atoré") ---
   const showTaskBar = isTask && !sheetOpen;
@@ -545,18 +581,26 @@ el.qwrap.addEventListener('click', ev => {
     return;
   }
   const optBtn = ev.target.closest('button[data-key]');
-  if (optBtn) setAnswer(optBtn.getAttribute('data-key'), optBtn.getAttribute('data-value'));
+  if (optBtn) {
+    const key = optBtn.getAttribute('data-key');
+    const value = optBtn.getAttribute('data-value');
+    setAnswer(key, value);
+    // Solo actualiza el estado visual de los botones de ESTA pregunta
+    // (marca el elegido, desmarca los demás), sin reconstruir la pantalla.
+    const group = optBtn.closest('.q-opts');
+    if (group) {
+      group.querySelectorAll('button[data-key="' + key.replace(/"/g, '\\"') + '"]').forEach(b => {
+        b.setAttribute('data-sel', b.getAttribute('data-value') === value ? 'true' : 'false');
+      });
+    }
+  }
 });
 el.qwrap.addEventListener('input', ev => {
   if (ev.target.tagName === 'TEXTAREA' && ev.target.dataset.key) {
-    const key = ev.target.dataset.key;
-    setAnswer(key, ev.target.value);
-    // setAnswer -> render() reconstruye el <textarea>, así que se pierde el
-    // foco a media escritura. Lo recuperamos en el siguiente frame.
-    requestAnimationFrame(() => {
-      const t = el.qList.querySelector('textarea[data-key="' + key.replace(/"/g, '\\"') + '"]');
-      if (t) { t.focus(); const len = t.value.length; try { t.setSelectionRange(len, len); } catch (e) {} }
-    });
+    // No se llama a render() aquí a propósito: el textarea nunca se toca,
+    // así que el foco y el cursor se quedan tal cual sin necesidad de ningún
+    // truco para restaurarlos.
+    setAnswer(ev.target.dataset.key, ev.target.value);
   }
 });
 
@@ -567,8 +611,6 @@ el.paperInner.addEventListener('click', ev => {
     state.copied = true;
     render();
     setTimeout(() => { state.copied = false; render(); }, 4000);
-  } else if (ev.target.id === 'btnReset') {
-    resetAll();
   }
 });
 
@@ -580,7 +622,27 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 window.addEventListener('pagehide', sendOnLeave);
 
 // ----------------------------------------------------------------------------
+// Botón de reset para pruebas (no para participantes reales): solo aparece
+// visitando la página con ?dev en la URL, ej. index.html?dev
+// ----------------------------------------------------------------------------
+
+function setupDevReset() {
+  let isDev = false;
+  try { isDev = new URLSearchParams(location.search).has('dev'); } catch (e) {}
+  if (!isDev) return;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.textContent = '⟲ Reiniciar prueba';
+  btn.style.cssText = 'position:fixed;right:10px;bottom:10px;z-index:200;background:#333;color:#fff;font-family:Nunito,sans-serif;font-size:12px;font-weight:700;padding:8px 14px;border-radius:16px;border:none;cursor:pointer;opacity:.85;box-shadow:0 2px 8px rgba(0,0,0,.25)';
+  btn.addEventListener('click', () => {
+    if (confirm('¿Borrar todo el progreso y empezar de nuevo? (esto es solo para pruebas)')) resetAll();
+  });
+  document.body.appendChild(btn);
+}
+
+// ----------------------------------------------------------------------------
 // Arranque
 // ----------------------------------------------------------------------------
 
 render();
+setupDevReset();

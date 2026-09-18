@@ -189,6 +189,16 @@ function showToast(msg, ms) {
 function nav(screen) {
   state.screen = screen;
   state.err = {};
+  // El contador de "reenviar código" corre en segundo plano mientras dure
+  // la verificación; si no se detiene al salir de "contacto", sigue
+  // intentando actualizar un contador que ya no existe en la pantalla y
+  // termina forzando un render() completo cada segundo (parpadeo).
+  if (screen === 'contacto') {
+    if (state.otpSent && state.resendLeft > 0 && !resendTimer) startResendTimer();
+  } else if (resendTimer) {
+    clearInterval(resendTimer);
+    resendTimer = null;
+  }
   render();
   window.scrollTo(0, 0);
 }
@@ -229,7 +239,7 @@ function fieldWrap(opts) {
     '<label style="font-family:Nunito;font-size:13px;font-weight:700;color:#333">' + opts.label + (opts.req !== false ? ' <span style="color:#E2003C">*</span>' : '') + '</label>' +
     '<div style="position:relative">' + opts.input + '</div>' +
     (opts.note || '') +
-    (opts.err && opts.errMsg ? '<div style="font-family:Nunito;font-size:12px;color:#E2003C">' + opts.errMsg + '</div>' : '') +
+    (opts.err && opts.errMsg ? '<div class="field-error" style="font-family:Nunito;font-size:12px;color:#E2003C">' + opts.errMsg + '</div>' : '') +
     '</div>';
 }
 
@@ -244,7 +254,7 @@ function renderPromo() {
   const onMobile = state.screen === 'landing' || state.screen === 'plan';
   return '<div class="promo" data-m="' + (onMobile ? '1' : '0') + '" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;background:linear-gradient(102deg,#0B6B2E 0%,#0B6B2E 60%,#3F9A3F 60.15%,#3F9A3F 100%);position:relative;overflow:hidden">' +
     '<div style="display:flex;align-items:center;gap:12px;min-width:0">' +
-    '<div style="width:44px;height:44px;border-radius:22px;flex:none;background:#8CC44A;display:flex;align-items:center;justify-content:center;font-size:20px">🐾</div>' +
+    '<img src="./icono-promocion.png" alt="Hugo" style="width:44px;height:44px;border-radius:22px;flex:none;object-fit:cover;display:block">' +
     '<div style="min-width:0">' +
     '<div style="font-family:Nunito;font-weight:800;font-size:17px;color:#FFFFFF;line-height:1.1">Mundial 2026</div>' +
     '<div style="font-family:Nunito;font-weight:700;font-size:12px;color:#FFFFFF;line-height:1.3">10% OFF + 12 Meses sin intereses</div>' +
@@ -447,16 +457,17 @@ function renderContacto() {
     html += '<div style="background:#fff;border:1.5px solid #76B82A;border-radius:16px;padding:16px 18px;margin-top:22px">' +
       '<div style="display:flex;align-items:center;gap:8px"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F8A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4.5H4a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v4l4-4h9a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1z"></path></svg><span style="font-family:Nunito;font-weight:800;font-size:16px;color:#1F8A3B">Verifica tu teléfono</span></div>' +
       '<div style="font-family:Nunito;font-size:13px;color:#4A4A4A;line-height:1.45;margin-top:6px">Te enviamos un código de 6 dígitos por <b style="color:#1F8A3B">WhatsApp</b> al <b style="color:#1F8A3B">' + esc(state.tel) + '</b>. Escríbelo a continuación para confirmar que el número es tuyo.</div></div>' +
+      '<div style="background:#FFF8E6;border-radius:12px;padding:12px 14px;margin-top:14px;font-family:Nunito;font-size:13px;line-height:1.45;color:#6B5B25">Es una simulación: no te va a llegar ningún código real. <strong>Escribe cualquier 6 dígitos</strong> para continuar.</div>' +
       '<div style="margin-top:20px">' +
       '<label style="font-family:Nunito;font-size:13px;font-weight:700;color:#333">Código de verificación <span style="color:#E2003C">*</span></label>' +
       '<div class="dgroup" data-err="' + (state.otpErr ? 'true' : 'false') + '" style="display:flex;gap:11px;margin-top:8px;animation:' + (state.otpShake ? 'shk .3s ease' : 'none') + '">' + otpDigits + '</div>' +
       '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px">' +
       '<span data-action="cambiarNumero" class="lnk" style="display:flex;align-items:center;gap:5px">' + ICON_PHONE.replace('24" height="24"', '14" height="14"') + '<span style="font-family:Nunito;font-size:12px;color:#1F8A3B;text-decoration:underline">Cambiar número</span></span>' +
-      '<span data-action="resend" class="lnk" style="font-family:Nunito;font-size:12px;color:' + (state.resendLeft > 0 ? '#9E9E9E' : '#1F8A3B') + '">' + (state.resendLeft > 0 ? ('Reenviar en ' + state.resendLeft + 's') : 'Reenviar código') + '</span>' +
+      '<span id="resendCountdown" data-action="resend" class="lnk" style="font-family:Nunito;font-size:12px;color:' + (state.resendLeft > 0 ? '#9E9E9E' : '#1F8A3B') + '">' + (state.resendLeft > 0 ? ('Reenviar en ' + state.resendLeft + 's') : 'Reenviar código') + '</span>' +
       '</div>' +
       (state.otpErr ? '<div style="font-family:Nunito;font-size:12px;color:#E2003C;margin-top:8px">El código no es correcto. Revísalo e inténtalo de nuevo.</div>' : '') +
       '</div>' +
-      '<div style="display:flex;justify-content:flex-end;margin-top:30px"><button type="button" data-action="confirmOtp" class="btn" ' + (state.otp.join('').length !== 6 ? 'disabled' : '') + ' style="width:100%;max-width:380px;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:21px">Confirmar y continuar</button></div>';
+      '<div style="display:flex;justify-content:flex-end;margin-top:30px"><button type="button" id="btnConfirmOtp" data-action="confirmOtp" class="btn" ' + (state.otp.join('').length !== 6 ? 'disabled' : '') + ' style="width:100%;max-width:380px;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:21px">Confirmar y continuar</button></div>';
   }
   html += '</section>';
   return html;
@@ -587,8 +598,8 @@ function renderDatos() {
 function renderPoliza() {
   const e = state.err;
   const nivHelp = '<div style="background:#fff;border-radius:22px;padding:18px"><div style="font-family:Nunito;font-weight:800;font-size:17px;color:#333">¿Dónde encuentro mi NIV?</div><div class="grid2" style="margin-top:14px;gap:14px">' +
-    ph('Auto / parabrisas', 'aspect-ratio:1.5;border-radius:10px') + '<div style="font-family:Nunito;font-weight:700;font-size:13px;color:#333;text-align:center;margin-top:8px">En el parabrisas</div><div style="font-family:Nunito;font-size:12px;color:#8A8A8A;text-align:center;margin-bottom:8px">Esquina inferior, del lado del conductor</div>' +
-    ph('Tarjeta de circulación', 'aspect-ratio:1.5;border-radius:10px') + '<div style="font-family:Nunito;font-weight:700;font-size:13px;color:#333;text-align:center;margin-top:8px">En tu tarjeta de circulación</div><div style="font-family:Nunito;font-size:12px;color:#8A8A8A;text-align:center">Esquina inferior, del lado del conductor</div>' +
+    '<div><div style="position:relative;width:100%;max-width:150px;margin:0 auto;padding-bottom:17.4%;border-radius:10px;overflow:hidden;background:#F2F2F2"><img src="./parabrisas.png" alt="Auto / parabrisas" style="position:absolute;inset:0;width:100%;height:auto;display:block"></div><div style="font-family:Nunito;font-weight:700;font-size:13px;color:#333;text-align:center;margin-top:8px">En el parabrisas</div><div style="font-family:Nunito;font-size:12px;color:#8A8A8A;text-align:center">Esquina inferior, del lado del conductor</div></div>' +
+    '<div><div style="position:relative;width:100%;max-width:150px;margin:0 auto;padding-bottom:17.4%;border-radius:10px;overflow:hidden;background:#F2F2F2"><img src="./tajetacircu.png" alt="Tarjeta de circulación" style="position:absolute;inset:0;width:100%;height:auto;display:block"></div><div style="font-family:Nunito;font-weight:700;font-size:13px;color:#333;text-align:center;margin-top:8px">En tu tarjeta de circulación</div><div style="font-family:Nunito;font-size:12px;color:#8A8A8A;text-align:center">Esquina inferior, del lado del conductor</div></div>' +
     '</div><div style="background:#EAF5DC;border-radius:14px;padding:12px;margin-top:14px;display:flex;align-items:flex-start;gap:12px"><span style="font-size:22px">🐾</span><div><div style="font-family:Nunito;font-weight:800;font-size:14px;color:#5E9D22">¿No lo encuentras?</div><div style="font-family:Nunito;font-size:13px;color:#5A5A5A;margin-top:2px">A veces se esconde bajo el cofre o en la puerta del conductor.</div></div></div></div>';
 
   return '<section style="animation:scin .24s ease both">' +
@@ -598,8 +609,8 @@ function renderPoliza() {
     '<div>' +
     fieldWrap({
       label: 'Número de serie (NIV) de tu auto', filled: state.niv.length === 17, err: !!e.niv,
-      input: '<input data-action="nivInput" value="' + esc(state.niv) + '" maxlength="17" placeholder="Ej. 3N1AB7AP8KY000000" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none;text-transform:uppercase">' + ICON_CAR.replace('20" height="20"', '21" height="21"'),
-      note: '<div style="display:flex;justify-content:space-between;gap:10px">' + (e.niv ? '<span style="font-family:Nunito;font-size:12px;color:#E2003C">El NIV debe tener 17 caracteres</span>' : '') + '<span style="font-family:Nunito;font-size:12px;color:#9E9E9E;margin-left:auto">' + state.niv.length + '/17 · Son 17 caracteres</span></div>'
+      input: '<input data-action="nivInput" value="' + esc(state.niv) + '" maxlength="17" placeholder="Ej. 3N1AB7AP8KY000000" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none;text-transform:uppercase"><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none">' + ICON_CAR.replace('20" height="20"', '21" height="21"') + '</span>',
+      note: '<div style="display:flex;justify-content:space-between;gap:10px">' + (e.niv ? '<span class="field-error" style="font-family:Nunito;font-size:12px;color:#E2003C">El NIV debe tener 17 caracteres</span>' : '') + '<span id="nivCounter" style="font-family:Nunito;font-size:12px;color:#9E9E9E;margin-left:auto">' + state.niv.length + '/17 · Son 17 caracteres</span></div>'
     }) +
     '<div class="only-m" style="margin-top:18px">' + nivHelp + '</div>' +
     '<div style="margin-top:18px">' + fieldWrap({
@@ -647,11 +658,11 @@ function renderPago() {
     '<div style="font-family:Nunito;font-weight:800;font-size:19px;color:#333">Método de pago</div>' +
     '<div style="margin-top:14px">' + fieldWrap({
       label: 'Número de la tarjeta', req: false, filled: digits(state.card).length === 16, err: !!e.card, errMsg: 'Ingresa los 16 dígitos de tu tarjeta',
-      input: '<input data-action="cardInput" value="' + esc(state.card) + '" inputmode="numeric" placeholder="0000 0000 0000 0000" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none">' + ICON_CARD.replace('20" height="20"', '21" height="21"')
+      input: '<input data-action="cardInput" value="' + esc(state.card) + '" inputmode="numeric" placeholder="0000 0000 0000 0000" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none"><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none">' + ICON_CARD.replace('20" height="20"', '21" height="21"') + '</span>'
     }) + '</div>' +
     '<div class="half" style="margin-top:14px">' +
-    fieldWrap({ label: 'Vencimiento', req: false, filled: /^\d{2}\/\d{2}$/.test(state.exp), err: !!e.exp, errMsg: 'MM/AA', input: '<input data-action="expInput" value="' + esc(state.exp) + '" inputmode="numeric" placeholder="MM/AA" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 46px 0 18px;font-family:Nunito;font-size:15px;color:#333;outline:none">' + ICON_CARD.replace('20" height="20"', '20" height="20"') }) +
-    fieldWrap({ label: 'CVV', req: false, filled: state.cvv.length === 3, err: !!e.cvv, errMsg: '3 dígitos', input: '<input data-action="cvvInput" value="' + esc(state.cvv) + '" inputmode="numeric" maxlength="3" placeholder="123" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 46px 0 18px;font-family:Nunito;font-size:15px;color:#333;outline:none">' + ICON_CARD.replace('20" height="20"', '20" height="20"') }) +
+    fieldWrap({ label: 'Vencimiento', req: false, filled: /^\d{2}\/\d{2}$/.test(state.exp), err: !!e.exp, errMsg: 'MM/AA', input: '<input data-action="expInput" value="' + esc(state.exp) + '" inputmode="numeric" placeholder="MM/AA" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 46px 0 18px;font-family:Nunito;font-size:15px;color:#333;outline:none"><span class="ic" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none">' + ICON_CARD + '</span>' }) +
+    fieldWrap({ label: 'CVV', req: false, filled: state.cvv.length === 3, err: !!e.cvv, errMsg: '3 dígitos', input: '<input data-action="cvvInput" value="' + esc(state.cvv) + '" inputmode="numeric" maxlength="3" placeholder="123" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 46px 0 18px;font-family:Nunito;font-size:15px;color:#333;outline:none"><span class="ic" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none">' + ICON_CARD + '</span>' }) +
     '</div></div>' +
     (state.payError ? '<div style="background:#FDE9EE;border:1.5px solid #E2003C;border-radius:16px;padding:14px 16px;margin-top:16px"><div style="font-family:Nunito;font-weight:800;font-size:15px;color:#E2003C">No pudimos procesar tu pago</div><div style="font-family:Nunito;font-size:13px;color:#8A5561;margin-top:2px">Revisa los datos de tu tarjeta o intenta con otra.</div></div>' : '') +
     '<button type="button" data-action="pay" class="btn" ' + (state.paying ? 'disabled' : '') + ' style="width:100%;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:20px;margin-top:18px;display:flex;align-items:center;justify-content:center;gap:10px">' +
@@ -903,44 +914,116 @@ root.addEventListener('click', ev => {
   }
 });
 
+// Actualiza en vivo el borde/ícono verde o rojo de un campo (según esté
+// lleno o tenga error) sin reconstruir nada. Ver liveUpdateField() más abajo
+// para por qué esto importa.
+function updateFieldChrome(inputEl, filled) {
+  const wrap = inputEl.closest('.fw');
+  if (!wrap) return;
+  wrap.setAttribute('data-filled', filled ? 'true' : 'false');
+  wrap.setAttribute('data-err', 'false');
+  const errEl = wrap.querySelector('.field-error');
+  if (errEl) errEl.style.display = 'none';
+}
+
+// Actualiza un input de texto sin llamar a render(): así el <input> nunca se
+// destruye y el foco/cursor se quedan tal cual. Antes cada tecla reconstruía
+// toda la pantalla (perdiendo el foco y, como el <section> vuelve a montarse,
+// reiniciando su animación de entrada — el "parpadeo").
+// `displayValue`, si se manda, es el valor ya formateado que debe verse en
+// el campo (para los que transforman lo que escribes, como el NIV en
+// mayúsculas o la tarjeta con espacios); si no se manda, se deja tal cual lo
+// escribió la persona.
+function liveUpdateField(inputEl, displayValue, filled) {
+  if (displayValue !== undefined && inputEl.value !== displayValue) {
+    inputEl.value = displayValue;
+    try { inputEl.setSelectionRange(displayValue.length, displayValue.length); } catch (e) {}
+  }
+  updateFieldChrome(inputEl, filled);
+}
+
 root.addEventListener('input', ev => {
   const t = ev.target;
   const action = t.getAttribute('data-action');
   if (!action) return;
   switch (action) {
-    case 'nombreInput': state.nombre = t.value; clearErr('nombre'); render(); restoreFocus(t); break;
+    case 'nombreInput':
+      state.nombre = t.value; clearErr('nombre');
+      liveUpdateField(t, undefined, state.nombre.trim().length > 1);
+      break;
     case 'marcaSelect': state.marca = t.value; clearErr('marca'); render(); setTimeout(loadVersiones, 0); break;
     case 'anioSelect': state.anio = t.value; clearErr('anio'); render(); setTimeout(loadVersiones, 0); break;
     case 'versionSelect': state.version = t.value; clearErr('version'); render(); break;
     case 'cpDigit': {
       const i = Number(t.getAttribute('data-i'));
       const v = digits(t.value).slice(0, 1);
-      state.cp[i] = v; clearErr('cp'); render();
-      if (v && i < 4) { const n = root.querySelectorAll('.dgroup .dig')[i + 1]; if (n) n.focus(); }
+      state.cp[i] = v; clearErr('cp');
+      t.value = v;
+      t.setAttribute('data-filled', v !== '' ? 'true' : 'false');
+      const group = t.closest('.dgroup'); if (group) group.setAttribute('data-err', 'false');
+      if (v && i < 4) { const n = t.parentNode.children[i + 1]; if (n) n.focus(); }
       break;
     }
-    case 'telLInput': state.telL = digits(t.value).slice(0, 10); clearErr('telL'); render(); restoreFocus(t); break;
-    case 'emailInput': state.email = t.value; clearErr('email'); render(); restoreFocus(t); break;
-    case 'telInput': state.tel = digits(t.value).slice(0, 10); clearErr('tel'); render(); restoreFocus(t); break;
+    case 'telLInput':
+      state.telL = digits(t.value).slice(0, 10); clearErr('telL');
+      liveUpdateField(t, state.telL, state.telL.length === 10);
+      break;
+    case 'emailInput':
+      state.email = t.value; clearErr('email');
+      liveUpdateField(t, undefined, /.+@.+\..+/.test(state.email));
+      break;
+    case 'telInput':
+      state.tel = digits(t.value).slice(0, 10); clearErr('tel');
+      liveUpdateField(t, state.tel, state.tel.length === 10);
+      break;
     case 'otpDigit': {
       const i = Number(t.getAttribute('data-i'));
       const v = digits(t.value).slice(0, 1);
-      state.otp[i] = v; state.otpErr = false; render();
-      if (v && i < 5) { const n = root.querySelectorAll('.dgroup .dig')[i + 1]; if (n) n.focus(); }
+      state.otp[i] = v; state.otpErr = false;
+      t.value = v;
+      t.setAttribute('data-filled', v !== '' ? 'true' : 'false');
+      const group = t.closest('.dgroup'); if (group) group.setAttribute('data-err', 'false');
+      const confirmBtn = $('btnConfirmOtp');
+      if (confirmBtn) confirmBtn.disabled = state.otp.join('').length !== 6;
+      if (v && i < 5) { const n = t.parentNode.children[i + 1]; if (n) n.focus(); }
       break;
     }
-    case 'dInput': { const f = t.getAttribute('data-field'); state.d[f] = t.value; clearErr('d' + f); render(); restoreFocus(t); break; }
+    case 'dInput': {
+      const f = t.getAttribute('data-field'); state.d[f] = t.value; clearErr('d' + f);
+      liveUpdateField(t, undefined, !!state.d[f]);
+      break;
+    }
     case 'dFechaInput': {
       const g = digits(t.value).slice(0, 8);
       let out = g.slice(0, 2); if (g.length > 2) out += '/' + g.slice(2, 4); if (g.length > 4) out += '/' + g.slice(4, 8);
-      state.d.fecha = out; clearErr('dfecha'); render(); restoreFocus(t);
+      state.d.fecha = out; clearErr('dfecha');
+      liveUpdateField(t, out, /^\d{2}\/\d{2}\/\d{4}$/.test(out));
       break;
     }
-    case 'nivInput': state.niv = t.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 17); clearErr('niv'); render(); restoreFocus(t); break;
-    case 'rfcInput': state.rfc = t.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 13); clearErr('rfc'); render(); restoreFocus(t); break;
-    case 'cardInput': { const g = digits(t.value).slice(0, 16); state.card = g.replace(/(.{4})/g, '$1 ').trim(); clearErr('card'); render(); restoreFocus(t); break; }
-    case 'expInput': { const g = digits(t.value).slice(0, 4); state.exp = g.length > 2 ? g.slice(0, 2) + '/' + g.slice(2) : g; clearErr('exp'); render(); restoreFocus(t); break; }
-    case 'cvvInput': state.cvv = digits(t.value).slice(0, 3); clearErr('cvv'); render(); restoreFocus(t); break;
+    case 'nivInput': {
+      state.niv = t.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 17); clearErr('niv');
+      liveUpdateField(t, state.niv, state.niv.length === 17);
+      const counter = $('nivCounter'); if (counter) counter.textContent = state.niv.length + '/17 · Son 17 caracteres';
+      break;
+    }
+    case 'rfcInput':
+      state.rfc = t.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 13); clearErr('rfc');
+      liveUpdateField(t, state.rfc, state.rfc.length === 13);
+      break;
+    case 'cardInput': {
+      const g = digits(t.value).slice(0, 16); state.card = g.replace(/(.{4})/g, '$1 ').trim(); clearErr('card');
+      liveUpdateField(t, state.card, digits(state.card).length === 16);
+      break;
+    }
+    case 'expInput': {
+      const g = digits(t.value).slice(0, 4); state.exp = g.length > 2 ? g.slice(0, 2) + '/' + g.slice(2) : g; clearErr('exp');
+      liveUpdateField(t, state.exp, /^\d{2}\/\d{2}$/.test(state.exp));
+      break;
+    }
+    case 'cvvInput':
+      state.cvv = digits(t.value).slice(0, 3); clearErr('cvv');
+      liveUpdateField(t, state.cvv, state.cvv.length === 3);
+      break;
   }
 });
 
@@ -959,22 +1042,24 @@ root.addEventListener('keydown', ev => {
   }
 });
 
-// Restaura foco + posición del cursor tras un re-render disparado por un input de texto.
-function restoreFocus(originalEl) {
-  const action = originalEl.getAttribute('data-action');
-  const field = originalEl.getAttribute('data-field');
-  requestAnimationFrame(() => {
-    let sel = '[data-action="' + action + '"]' + (field ? '[data-field="' + field + '"]' : '');
-    const target = root.querySelector(sel);
-    if (target) { target.focus(); const len = target.value.length; try { target.setSelectionRange(len, len); } catch (e) {} }
-  });
-}
-
 function startResendTimer() {
   if (resendTimer) clearInterval(resendTimer);
   resendTimer = setInterval(() => {
-    if (state.otpSent && state.resendLeft > 0) { state.resendLeft--; render(); }
-    else { clearInterval(resendTimer); }
+    if (state.otpSent && state.resendLeft > 0) {
+      state.resendLeft--;
+      // Actualiza solo el texto del contador en vez de volver a dibujar toda
+      // la pantalla cada segundo: si la persona está escribiendo el código
+      // en ese momento, un render() completo le quitaría el foco del campo.
+      const span = $('resendCountdown');
+      if (span) {
+        span.textContent = state.resendLeft > 0 ? ('Reenviar en ' + state.resendLeft + 's') : 'Reenviar código';
+        span.style.color = state.resendLeft > 0 ? '#9E9E9E' : '#1F8A3B';
+      } else {
+        render();
+      }
+    } else {
+      clearInterval(resendTimer);
+    }
   }, 1000);
 }
 
