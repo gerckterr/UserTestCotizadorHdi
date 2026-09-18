@@ -174,8 +174,9 @@ function totalDurationSeconds() {
   return Math.round((end - state.startedAt) / 1000);
 }
 
-function sendToSheets() {
+function sendToSheets(attempt) {
   if (!SHEETS_URL || SHEETS_URL.indexOf('PEGA_AQUI') !== -1) return;
+  attempt = attempt || 1;
   const payload = buildPayload();
   fetch(SHEETS_URL, {
     method: 'POST',
@@ -188,6 +189,13 @@ function sendToSheets() {
     saveLocal();
     if (state.i >= TASKS.length + 2) render();
   }).catch(() => {
+    // Reintenta un par de veces antes de rendirse: la mayoría de los
+    // "no se guardó" son baches de conexión pasajeros (celular con señal
+    // débil), no una falla real del backend.
+    if (attempt < 3) {
+      setTimeout(() => sendToSheets(attempt + 1), 1500 * attempt);
+      return;
+    }
     state.lastSendOk = false;
     saveLocal();
     if (state.i >= TASKS.length + 2) render();

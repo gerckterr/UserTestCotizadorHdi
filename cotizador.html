@@ -116,7 +116,7 @@ let state = {
   screen: 'landing',
   nombre: '', cp: ['', '', '', '', ''], marca: '', anio: '', version: '',
   verLoading: false, versiones: [],
-  email: '', tel: '', acepto: false, otpSent: false, sending: false,
+  email: '', tel: '', acepto: false, otpSent: false, sending: false, otpCode: '',
   otp: ['', '', '', '', '', ''], otpErr: false, otpShake: 0, resendLeft: 30,
   telL: '', telLDone: '',
   cobertura: 'amp', freq: 'mensual', promo: false, promoLoading: false, expandCov: false, compare: false,
@@ -163,6 +163,9 @@ function cardMonthly(k) {
   const amt = Math.round(state.freq === 'mensual' ? annual / 12 : annual * per);
   const months = { mensual: 1, trimestral: 3, anual: 12 }[state.freq];
   return Math.round(amt / months);
+}
+function genOtpCode() {
+  return String(Math.floor(100000 + Math.random() * 900000));
 }
 function genRfc() {
   const ap = (state.d.apellidos || '').trim().toUpperCase().replace(/[^A-ZÑ ]/g, '');
@@ -455,9 +458,10 @@ function renderContacto() {
   } else {
     const otpDigits = state.otp.map((v, i) => '<input class="dig" data-filled="' + (v !== '' ? 'true' : 'false') + '" data-i="' + i + '" data-action="otpDigit" value="' + esc(v) + '" inputmode="numeric" maxlength="1" style="width:52px;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;text-align:center;font-family:Nunito;font-size:19px;font-weight:700;color:#B5B5B5;outline:none">').join('');
     html += '<div style="background:#fff;border:1.5px solid #76B82A;border-radius:16px;padding:16px 18px;margin-top:22px">' +
-      '<div style="display:flex;align-items:center;gap:8px"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F8A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4.5H4a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v4l4-4h9a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1z"></path></svg><span style="font-family:Nunito;font-weight:800;font-size:16px;color:#1F8A3B">Verifica tu teléfono</span></div>' +
-      '<div style="font-family:Nunito;font-size:13px;color:#4A4A4A;line-height:1.45;margin-top:6px">Te enviamos un código de 6 dígitos por <b style="color:#1F8A3B">WhatsApp</b> al <b style="color:#1F8A3B">' + esc(state.tel) + '</b>. Escríbelo a continuación para confirmar que el número es tuyo.</div></div>' +
-      '<div style="background:#FFF8E6;border-radius:12px;padding:12px 14px;margin-top:14px;font-family:Nunito;font-size:13px;line-height:1.45;color:#6B5B25">Es una simulación: no te va a llegar ningún código real. <strong>Escribe cualquier 6 dígitos</strong> para continuar.</div>' +
+      '<div style="display:flex;align-items:center;gap:8px"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F8A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4.5H4a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v4l4-4h9a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1z"></path></svg><span style="font-family:Nunito;font-weight:800;font-size:16px;color:#1F8A3B">Tu código de verificación</span></div>' +
+      '<div style="font-family:Nunito;font-size:13px;color:#4A4A4A;line-height:1.45;margin-top:6px">Este es un prototipo de prueba: no te llega ningún WhatsApp real. Usa el código de aquí abajo para continuar.</div>' +
+      '<div style="text-align:center;background:#F1F8E7;border-radius:12px;padding:14px;margin-top:12px;font-family:Inter,sans-serif;font-weight:800;font-size:30px;letter-spacing:.2em;color:#1F8A3B">' + esc(state.otpCode) + '</div>' +
+      '</div>' +
       '<div style="margin-top:20px">' +
       '<label style="font-family:Nunito;font-size:13px;font-weight:700;color:#333">Código de verificación <span style="color:#E2003C">*</span></label>' +
       '<div class="dgroup" data-err="' + (state.otpErr ? 'true' : 'false') + '" style="display:flex;gap:11px;margin-top:8px;animation:' + (state.otpShake ? 'shk .3s ease' : 'none') + '">' + otpDigits + '</div>' +
@@ -656,6 +660,7 @@ function renderPago() {
     '</div></div>' +
     '<div><div style="background:#fff;border-radius:22px;padding:20px">' +
     '<div style="font-family:Nunito;font-weight:800;font-size:19px;color:#333">Método de pago</div>' +
+    '<div style="background:#FFF8E6;border-radius:12px;padding:12px 14px;margin-top:12px;font-family:Nunito;font-size:13px;line-height:1.5;color:#6B5B25">Es una simulación: <strong>no ingreses los datos de tu tarjeta real.</strong> Usa esta tarjeta de prueba:<br>4242 4242 4242 4242 · Vencimiento 12/29 · CVV 123</div>' +
     '<div style="margin-top:14px">' + fieldWrap({
       label: 'Número de la tarjeta', req: false, filled: digits(state.card).length === 16, err: !!e.card, errMsg: 'Ingresa los 16 dígitos de tu tarjeta',
       input: '<input data-action="cardInput" value="' + esc(state.card) + '" inputmode="numeric" placeholder="0000 0000 0000 0000" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none"><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none">' + ICON_CARD.replace('20" height="20"', '21" height="21"') + '</span>'
@@ -839,11 +844,11 @@ root.addEventListener('click', ev => {
       state.err = er;
       if (Object.keys(er).length) { render(); break; }
       state.sending = true; render();
-      setTimeout(() => { state.sending = false; state.otpSent = true; state.resendLeft = 30; state.otp = ['', '', '', '', '', '']; state.otpErr = false; render(); startResendTimer(); }, 1100);
+      setTimeout(() => { state.sending = false; state.otpSent = true; state.resendLeft = 30; state.otp = ['', '', '', '', '', '']; state.otpErr = false; state.otpCode = genOtpCode(); render(); startResendTimer(); }, 1100);
       break;
     }
     case 'cambiarNumero': state.otpSent = false; state.otp = ['', '', '', '', '', '']; state.otpErr = false; render(); break;
-    case 'resend': if (state.resendLeft <= 0) { state.resendLeft = 30; state.otp = ['', '', '', '', '', '']; state.otpErr = false; render(); startResendTimer(); showToast('Te enviamos un nuevo código por WhatsApp', 2600); } break;
+    case 'resend': if (state.resendLeft <= 0) { state.resendLeft = 30; state.otp = ['', '', '', '', '', '']; state.otpErr = false; state.otpCode = genOtpCode(); render(); startResendTimer(); showToast('Nuevo código generado', 2600); } break;
     case 'confirmOtp': {
       const code = state.otp.join('');
       if (code === '000000') { state.otpErr = true; state.otpShake = Date.now(); render(); setTimeout(() => { state.otpShake = 0; render(); }, 400); break; }
