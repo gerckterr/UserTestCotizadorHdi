@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ayúdanos a mejorar el cotizador de auto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<div class="root" id="root" data-task="false">
+
+  <header class="top">
+    <img src="./logohdi.png" alt="HDI Seguros">
+    <div class="bar-track">
+      <div class="bar-bg"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+    </div>
+    <div class="counter" id="counter">1/5</div>
+  </header>
+
+  <div class="stage" id="stage" data-on="false">
+    <div class="task-bar">
+      <div class="task-bar-inner">
+        <div class="task-kicker" id="taskKicker"></div>
+        <div class="task-title" id="taskTitle"></div>
+        <div class="task-hint" id="taskHint"></div>
+      </div>
+    </div>
+    <iframe id="cotizadorFrame" src="./cotizador.html" title="Cotizador de auto"></iframe>
+  </div>
+
+  <main class="paper pad" id="paper" data-on="true">
+    <div class="inner" id="paperInner"></div>
+  </main>
+
+  <div class="qwrap" id="qwrap" data-mode="off">
+    <div class="qinner">
+      <div class="sheet-header" id="sheetHeader"></div>
+      <div class="q-list" id="qList"></div>
+    </div>
+  </div>
+
+  <div class="taskbar" id="taskbar">
+    <div class="row">
+      <button type="button" class="btn btn-done" id="btnDoneTask">Ya terminé esta tarea</button>
+      <button type="button" class="btn btn-stuck" id="btnStuck">Me atoré</button>
+    </div>
+    <div class="note-row">
+      <div class="need" id="taskNeed"></div>
+      <div class="done-hint" id="doneHint"></div>
+    </div>
+  </div>
+
+  <div class="navbar" id="navbar">
+    <div class="row">
+      <button type="button" class="btn btn-back" id="btnBack">Atrás</button>
+      <button type="button" class="btn btn-next" id="btnNext">Empezar</button>
+    </div>
+    <div class="note" id="navNote"></div>
+  </div>
+
+</div>
+
+<script src="./app.js"></script>
+</body>
+</html>

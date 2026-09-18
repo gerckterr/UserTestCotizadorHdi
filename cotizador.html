@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cotiza tu seguro de auto — HDI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#EAEAEA;font-family:Nunito,sans-serif;color:#333333;-webkit-font-smoothing:antialiased}
+a{color:#1F8A3B;text-decoration:none}
+a:hover{color:#0F7B33;text-decoration:underline}
+input,select,button,textarea{font-family:inherit}
+select{-webkit-appearance:none;appearance:none}
+input::placeholder{color:#ADADAD}
+@keyframes scin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shk{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@keyframes scan{0%{top:6%}100%{top:88%}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:.9}}
+.h1{font-family:Inter,sans-serif;font-weight:800;font-size:40px;line-height:1.04;letter-spacing:-.025em;margin:0;color:#333;text-wrap:pretty}
+.sub{font-family:Nunito;font-size:15px;line-height:1.4;color:#4A4A4A;margin:8px 0 0}
+.btn{transition:filter .16s ease,transform .1s ease,background .16s ease;cursor:pointer;border:none}
+.btn:hover{filter:brightness(1.06)}
+.btn:active{transform:scale(.985)}
+.btn[disabled]{background:#C3E1A2!important;color:#FFFFFF!important;cursor:not-allowed;filter:none;border-color:#C3E1A2!important}
+.card{transition:box-shadow .18s ease,border-color .18s ease}
+.opt:hover{box-shadow:0 6px 20px rgba(0,0,0,.09)}
+.lnk{cursor:pointer}
+.fw input:focus,.fw select:focus{border-color:#76B82A!important}
+.fw[data-filled="true"] input,.fw[data-filled="true"] select{border-color:#76B82A!important}
+.fw[data-filled="true"] .ic svg{stroke:#76B82A!important}
+.fw[data-err="true"] input,.fw[data-err="true"] select{border-color:#E2003C!important;color:#E2003C!important}
+.fw[data-err="true"] .ic svg{stroke:#E2003C!important}
+.fw[data-dis="true"] input,.fw[data-dis="true"] select{background:#D5D5D5!important;border-color:#D5D5D5!important;color:#8A8A8A!important}
+.fw[data-dis="true"] .ic svg{stroke:#A5A5A5!important}
+.dig{transition:border-color .15s ease,color .15s ease}
+.dig:focus{border-color:#76B82A!important;color:#76B82A!important}
+.dig[data-filled="true"]{border-color:#76B82A!important;color:#76B82A!important}
+.dgroup[data-err="true"] .dig{border-color:#E2003C!important;color:#E2003C!important}
+.pill{display:flex;align-items:center;justify-content:center;gap:6px;background:#C2C2C2;color:#FFFFFF;border:none;font-family:Nunito;font-weight:700;font-size:12px;transition:background .2s ease}
+.pill[data-st="done"],.pill[data-st="active"]{background:#76B82A}
+.pcard[data-sel="true"]{border-color:#76B82A!important;box-shadow:0 2px 10px rgba(118,184,42,.14)}
+.cell[data-on="false"]{color:#BDBDBD}
+.only-d{display:none}
+.side{display:flex;flex-direction:column}
+.stepper{display:flex;flex-direction:row;align-items:center;gap:0}
+.conn{background:#C2C2C2}
+.ph-box{background:#F2F2F2;border:1.5px dashed #C9C9C9;display:flex;align-items:center;justify-content:center;color:#9E9E9E;font-family:Nunito;font-size:12px;text-align:center;padding:8px}
+@media(max-width:899px){
+ .promo[data-m="0"]{display:none!important}
+ .pill{width:38px;height:38px;padding:0;border-radius:19px;flex:none}
+ .pill[data-st="active"]{width:auto;padding:0 14px 0 12px;gap:6px}
+ .pill .plabel{display:none}
+ .pill[data-st="active"] .plabel{display:inline}
+ .conn{width:8px;height:1.5px;margin:0 4px;flex:none}
+ .shell{display:flex;flex-direction:column;gap:18px;padding:18px 20px 72px;max-width:640px;margin:0 auto}
+ .grid2,.grid3,.grid2n{display:flex;flex-direction:column;gap:16px}
+ .half{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+}
+@media(min-width:900px){
+ .only-d{display:block}
+ .only-m{display:none!important}
+ .h1{font-size:48px;line-height:1.02}
+ .stepper{flex-direction:column;align-items:stretch;gap:0}
+ .pill{width:100%;height:36px;border-radius:18px;font-size:13px}
+ .conn{width:1.5px;height:12px;margin:0 auto;flex:none}
+ .shell{display:grid;grid-template-columns:220px minmax(0,1fr);gap:60px;max-width:1220px;margin:0 auto;padding:44px 24px 90px;align-items:start}
+ .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+ .grid2n{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px}
+ .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+ .half{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+ .lastrow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px}
+}
+</style>
+</head>
+<body>
+<div id="screenRoot" data-screen="landing" data-sig="" style="min-height:100vh;background:#EAEAEA;display:flex;flex-direction:column"></div>
+<script>
+// ============================================================================
+// Cotizador de seguro de auto — prototipo autocontenido (vanilla JS).
+// Puerto de design/Cotizador Auto.dc.html, sin el runtime de diseño.
+// Notifica a la ventana padre (el test) cada vez que cambia de pantalla,
+// vía postMessage, y además deja el atributo data-screen como respaldo.
+// ============================================================================
+
+const MODELOS = {
+  'Nissan Versa': { f: 1.00, v: ['SENSE, L4, 1.6L, 106 CP, 5 PUERTAS, STD', 'ADVANCE, L4, 1.6L, 106 CP, 5 PUERTAS, STD', 'ADVANCE, L4, 1.6L, 106 CP, 5 PUERTAS, CVT', 'EXCLUSIVE, L4, 1.6L, 106 CP, 5 PUERTAS, CVT'] },
+  'Nissan March': { f: 0.88, v: ['SENSE, L4, 1.6L, 106 CP, 5 PUERTAS, STD', 'ADVANCE, L4, 1.6L, 106 CP, 5 PUERTAS, CVT', 'SR, L4, 1.6L, 106 CP, 5 PUERTAS, CVT'] },
+  'Chevrolet Aveo': { f: 0.90, v: ['LS, L4, 1.5L, 107 CP, 4 PUERTAS, STD', 'LT, L4, 1.5L, 107 CP, 4 PUERTAS, AUT', 'PREMIER, L4, 1.5L, 107 CP, 4 PUERTAS, AUT'] },
+  'Volkswagen Jetta': { f: 1.18, v: ['TRENDLINE, L4, 1.4L, 150 CP, 4 PUERTAS, STD', 'COMFORTLINE, L4, 1.4L, 150 CP, 4 PUERTAS, AUT', 'HIGHLINE, L4, 1.4L, 150 CP, 4 PUERTAS, AUT'] },
+  'KIA Rio': { f: 0.95, v: ['LX, L4, 1.6L, 121 CP, 4 PUERTAS, STD', 'EX, L4, 1.6L, 121 CP, 4 PUERTAS, AUT', 'EX PACK, L4, 1.6L, 121 CP, 5 PUERTAS, AUT'] },
+  'Toyota Corolla': { f: 1.22, v: ['BASE, L4, 1.8L, 139 CP, 4 PUERTAS, CVT', 'LE, L4, 1.8L, 139 CP, 4 PUERTAS, CVT', 'SE, L4, 2.0L, 169 CP, 4 PUERTAS, CVT'] },
+  'Honda City': { f: 1.12, v: ['UNIQUE, L4, 1.5L, 119 CP, 4 PUERTAS, STD', 'PRIME, L4, 1.5L, 119 CP, 4 PUERTAS, CVT', 'TOURING, L4, 1.5L, 119 CP, 4 PUERTAS, CVT'] },
+  'Mazda 3': { f: 1.30, v: ['I, L4, 2.0L, 155 CP, 4 PUERTAS, STD', 'I GRAND TOURING, L4, 2.5L, 186 CP, 4 PUERTAS, AUT', 'S GRAND TOURING, L4, 2.5L, 186 CP, 5 PUERTAS, AUT'] }
+};
+const BASE = { rc: 7800, lim: 11760, amp: 17400 };
+const ITEMS = {
+  rc: ['Responsabilidad Civil (R.C.) Daños a Terceros', 'Asistencia Jurídica'],
+  lim: ['Responsabilidad Civil (R.C.) Daños a Terceros', 'Asistencia Jurídica', 'Robo Total', 'Gastos Médicos Ocupantes'],
+  amp: ['Gastos Médicos Ocupantes', 'Responsabilidad Civil (R.C.) Daños a Terceros', 'Extensión de R.C.', 'Asistencia Jurídica', 'Daños Materiales', 'Robo Total']
+};
+const COVS = [
+  { k: 'rc', n: 'R.C.', d: 'Cobertura básica', rec: false },
+  { k: 'lim', n: 'Limitada', d: 'Cobertura limitada', rec: false },
+  { k: 'amp', n: 'Amplia', d: 'Cobertura completa', rec: true }
+];
+const ALL_ITEMS = ['Responsabilidad Civil (R.C.) Daños a Terceros', 'Asistencia Jurídica', 'Robo Total', 'Gastos Médicos Ocupantes', 'Extensión de R.C.', 'Daños Materiales'];
+const CPMAP = { '37000': { c: 'Del Valle', m: 'Guanajuato' }, '06700': { c: 'Roma Norte', m: 'Cuauhtémoc' }, '44100': { c: 'Centro', m: 'Guadalajara' }, '64000': { c: 'Centro', m: 'Monterrey' }, '20000': { c: 'Centro', m: 'Aguascalientes' } };
+const FREQS = [{ k: 'mensual', n: 'Mensual' }, { k: 'trimestral', n: 'Trimestral' }, { k: 'anual', n: 'Anual' }];
+const STEP_OF = { auto: 1, help: 1, llamar: 1, marcamos: 1, llamamos: 1, contacto: 2, plan: 3, identidad: 4, ine: 4, datos: 4, poliza: 5, pago: 6 };
+
+let state = {
+  screen: 'landing',
+  nombre: '', cp: ['', '', '', '', ''], marca: '', anio: '', version: '',
+  verLoading: false, versiones: [],
+  email: '', tel: '', acepto: false, otpSent: false, sending: false,
+  otp: ['', '', '', '', '', ''], otpErr: false, otpShake: 0, resendLeft: 30,
+  telL: '', telLDone: '',
+  cobertura: 'amp', freq: 'mensual', promo: false, promoLoading: false, expandCov: false, compare: false,
+  identMode: null,
+  d: { nombre: '', apellidos: '', fecha: '', calle: '', colonia: '', municipio: '', numext: '', numint: '' },
+  niv: '', rfc: '', factura: false,
+  card: '', exp: '', cvv: '', paying: false, payError: false,
+  err: {}, helpOpen: false, toast: ''
+};
+let versionesTimer = null;
+let resendTimer = null;
+let lastPostedSig = null;
+
+// --- helpers ---
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function digits(s) { return (s || '').replace(/\D/g, ''); }
+function fmt2(n) { return Number(n).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function fmt0(n) { return Math.round(Number(n)).toLocaleString('es-MX'); }
+
+function money() {
+  const f = (MODELOS[state.marca] || { f: 1 }).f;
+  const annual = Math.round(BASE[state.cobertura] * f);
+  const per = { mensual: 1, trimestral: 0.97 / 4, anual: 0.85 }[state.freq];
+  let amt = Math.round(state.freq === 'mensual' ? annual / 12 : annual * per);
+  const amtBase = amt;
+  if (state.promo) amt = Math.round(amt * 0.9);
+  const after = { mensual: 11, trimestral: 3, anual: 0 }[state.freq];
+  const totalBase = annual;
+  const totalFinal = state.promo ? Math.round(annual * 0.9) : annual;
+  return {
+    annual, amt, amtBase, after,
+    unit: { mensual: '/mes', trimestral: '/trimestre', anual: '/año' }[state.freq],
+    months: { mensual: 1, trimestral: 3, anual: 12 }[state.freq],
+    ahorroAnual: annual - Math.round(annual * 0.85),
+    ahorroPromo: Math.round(annual * 0.1),
+    totalBase, totalFinal
+  };
+}
+function cardMonthly(k) {
+  const f = (MODELOS[state.marca] || { f: 1 }).f;
+  const annual = Math.round(BASE[k] * f);
+  const per = { mensual: 1, trimestral: 0.97 / 4, anual: 0.85 }[state.freq];
+  const amt = Math.round(state.freq === 'mensual' ? annual / 12 : annual * per);
+  const months = { mensual: 1, trimestral: 3, anual: 12 }[state.freq];
+  return Math.round(amt / months);
+}
+function genRfc() {
+  const ap = (state.d.apellidos || '').trim().toUpperCase().replace(/[^A-ZÑ ]/g, '');
+  const no = (state.d.nombre || '').trim().toUpperCase().replace(/[^A-ZÑ ]/g, '');
+  const p = ap.split(/\s+/)[0] || 'XXXX';
+  const vow = (p.slice(1).match(/[AEIOU]/) || ['X'])[0];
+  const f = digits(state.d.fecha);
+  const yy = f.slice(4, 8).slice(2) || '00', mm = f.slice(2, 4) || '00', dd = f.slice(0, 2) || '00';
+  return (p.slice(0, 2) + vow + (no[0] || 'X') + yy + mm + dd + 'HD1').slice(0, 13);
+}
+function clearErr(k) { if (state.err[k]) delete state.err[k]; }
+function loadVersiones() {
+  const m = state.marca, a = state.anio;
+  if (!m || !a) { state.versiones = []; state.version = ''; state.verLoading = false; return; }
+  state.verLoading = true; state.versiones = []; state.version = '';
+  if (versionesTimer) clearTimeout(versionesTimer);
+  versionesTimer = setTimeout(() => { state.verLoading = false; state.versiones = (MODELOS[m] || { v: [] }).v; render(); }, 750);
+}
+function showToast(msg, ms) {
+  state.toast = msg; render();
+  setTimeout(() => { state.toast = ''; render(); }, ms || 2400);
+}
+
+function nav(screen) {
+  state.screen = screen;
+  state.err = {};
+  render();
+  window.scrollTo(0, 0);
+}
+
+function postScreenIfChanged() {
+  const sig = [state.screen, state.cobertura, state.freq, state.promo ? 1 : 0].join('|');
+  if (sig === lastPostedSig) return;
+  lastPostedSig = sig;
+  try {
+    window.parent.postMessage({ type: 'screen', screen: state.screen, sig: sig }, '*');
+  } catch (e) {}
+}
+
+// --- iconos reutilizados (SVG inline, copiados del prototipo) ---
+const ICON_CAR = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8CC44A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h18l-1.4-4.2A2 2 0 0 0 17.7 7H6.3a2 2 0 0 0-1.9 1.8L3 13z"></path><path d="M3 13v4h18v-4"></path><circle cx="7" cy="17" r="1.5"></circle><circle cx="17" cy="17" r="1.5"></circle></svg>';
+const ICON_SHIELD = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8CC44A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6l7-3z"></path></svg>';
+const ICON_CARD = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8CC44A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"></rect><path d="M2.5 10h19"></path></svg>';
+const ICON_ARROW = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#76B82A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg>';
+const ICON_CHEVRON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A5A5A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"></path></svg>';
+const ICON_WA = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F8A3B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11.8A8 8 0 0 1 8.6 19L4 20l1.1-4.4A8 8 0 1 1 20 11.8z"></path></svg>';
+const ICON_PHONE = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F8A3B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.5h2.2l1.4 3.4-1.8 1.3a11 11 0 0 0 5.4 5.4l1.3-1.8 3.4 1.4v2.2c0 1.1-.9 2-2 2A14.5 14.5 0 0 1 4.6 5.5c0-1.1.9-2 2-2z"></path></svg>';
+const ICON_CLOCK = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F8A3B" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>';
+const ICON_USER = '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#A5A5A5" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.2"></circle><path d="M5.5 20c1-3.2 3.6-5 6.5-5s5.5 1.8 6.5 5"></path></svg>';
+const ICON_CHECK_CIRCLE = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#76B82A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"></circle><path d="M8 12.2l2.6 2.6L16.2 9"></path></svg>';
+const ICON_CLOSE = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8A8A" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>';
+
+function ph(label, extraStyle) {
+  return '<div class="ph-box" style="' + (extraStyle || '') + '">' + esc(label) + '</div>';
+}
+
+// ----------------------------------------------------------------------------
+// Render
+// ----------------------------------------------------------------------------
+
+function fieldWrap(opts) {
+  // opts: {label, req, filled, err, dis, id, input, errMsg, note}
+  return '<div class="fw" data-filled="' + (opts.filled ? 'true' : 'false') + '" data-err="' + (opts.err ? 'true' : 'false') + '"' + (opts.dis ? ' data-dis="true"' : '') + ' style="display:flex;flex-direction:column;gap:6px">' +
+    '<label style="font-family:Nunito;font-size:13px;font-weight:700;color:#333">' + opts.label + (opts.req !== false ? ' <span style="color:#E2003C">*</span>' : '') + '</label>' +
+    '<div style="position:relative">' + opts.input + '</div>' +
+    (opts.note || '') +
+    (opts.err && opts.errMsg ? '<div style="font-family:Nunito;font-size:12px;color:#E2003C">' + opts.errMsg + '</div>' : '') +
+    '</div>';
+}
+
+function renderHeader() {
+  return '<header style="background:#F7F7F7;border-bottom:1px solid #E3E3E3;padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40">' +
+    '<div data-action="goHome" class="lnk" style="display:flex;align-items:center"><img src="./logohdi.png" alt="HDI Seguros" style="height:38px;width:auto;display:block"></div>' +
+    '<button type="button" data-action="openHelp" class="btn" style="background:none;font-family:Nunito;font-size:15px;color:#5A5A5A">¿Necesitas ayuda?</button>' +
+    '</header>';
+}
+
+function renderPromo() {
+  const onMobile = state.screen === 'landing' || state.screen === 'plan';
+  return '<div class="promo" data-m="' + (onMobile ? '1' : '0') + '" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;background:linear-gradient(102deg,#0B6B2E 0%,#0B6B2E 60%,#3F9A3F 60.15%,#3F9A3F 100%);position:relative;overflow:hidden">' +
+    '<div style="display:flex;align-items:center;gap:12px;min-width:0">' +
+    '<div style="width:44px;height:44px;border-radius:22px;flex:none;background:#8CC44A;display:flex;align-items:center;justify-content:center;font-size:20px">🐾</div>' +
+    '<div style="min-width:0">' +
+    '<div style="font-family:Nunito;font-weight:800;font-size:17px;color:#FFFFFF;line-height:1.1">Mundial 2026</div>' +
+    '<div style="font-family:Nunito;font-weight:700;font-size:12px;color:#FFFFFF;line-height:1.3">10% OFF + 12 Meses sin intereses</div>' +
+    '<div style="font-family:Nunito;font-size:11px;color:#CFE8CF;line-height:1.3;text-decoration:underline">Consulta términos y condiciones</div>' +
+    '</div></div>' +
+    '<div style="background:#FFFFFF;border-radius:8px;padding:6px 14px;text-align:center;flex:none">' +
+    '<div style="font-family:Nunito;font-size:10px;color:#5A5A5A;line-height:1.2">Usa el código</div>' +
+    '<div style="font-family:Nunito;font-weight:800;font-size:15px;color:#0F7B33;line-height:1.2">MUNDIAL2026</div>' +
+    '</div></div>';
+}
+
+function renderLanding() {
+  return '<main style="animation:scin .24s ease both;padding:20px 20px 70px;max-width:1220px;margin:0 auto;width:100%">' +
+    '<div class="grid2n" style="align-items:center">' +
+    '<div>' +
+    '<div style="background:#76B82A;border-radius:14px;padding:34px 28px 30px">' +
+    '<h1 class="h1" style="color:#FFFFFF">Cotiza tu seguro de auto</h1>' +
+    '<div style="font-family:Nunito;font-weight:800;font-size:18px;color:#FFFFFF;margin-top:14px">Y contrata tu póliza 100% en línea.</div>' +
+    '<div style="display:flex;flex-direction:column;gap:14px;margin-top:26px">' +
+    landingBullet('<circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path>', 'Listo en 2 minutos', 'Sin llamadas, sin esperas.') +
+    landingBullet('<rect x="5" y="10.5" width="14" height="9.5" rx="2"></rect><path d="M8.2 10.5V8a3.8 3.8 0 0 1 7.6 0v2.5"></path>', '100% digital y seguro', 'Tus datos siempre protegidos.') +
+    landingBullet('<path d="M14 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.5L14 3.5z"></path><path d="M14 3.5v5h5"></path>', 'Solo necesitas los datos de tu auto', 'Sin papeleo ni complicaciones.') +
+    '</div>' +
+    '<button type="button" data-action="start" class="btn" style="width:100%;height:60px;border-radius:30px;background:#FFFFFF;color:#0F7B33;font-family:Nunito;font-weight:800;font-size:19px;margin-top:28px">Comenzar cotización</button>' +
+    '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px">' +
+    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#EAF5DC" stroke-width="2" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2"></rect><path d="M8.2 10.5V8a3.8 3.8 0 0 1 7.6 0v2.5"></path></svg>' +
+    '<span style="font-family:Nunito;font-size:12px;color:#EAF5DC">Sin compromiso y sin tarjeta. Cotizar es gratis.</span>' +
+    '</div></div>' +
+    '<div style="background:#FFFFFF;border-radius:12px;padding:14px 18px;margin-top:16px;display:flex;align-items:center;justify-content:center;gap:10px">' +
+    '<span style="font-size:18px">🐾</span>' +
+    '<span style="font-family:Nunito;font-size:14px;color:#5A5A5A"><b style="color:#1F8A3B">+128,000 conductores</b> ya se protegen con <b style="color:#0F7B33">HDI</b></span>' +
+    '</div></div>' +
+    '<div style="position:relative;min-height:320px;display:flex;align-items:flex-end;justify-content:center">' +
+    '<img src="./hugo-home-desk.png" alt="Hugo, la mascota de HDI" style="width:100%;max-width:360px;height:auto;display:block;object-fit:contain">' +
+    '</div></div></main>';
+}
+function landingBullet(pathSvg, title, sub) {
+  return '<div style="display:flex;align-items:center;gap:14px">' +
+    '<span style="width:44px;height:44px;border-radius:22px;background:#8CC44A;display:flex;align-items:center;justify-content:center;flex:none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + pathSvg + '</svg></span>' +
+    '<div><div style="font-family:Nunito;font-weight:800;font-size:15px;color:#FFFFFF">' + title + '</div><div style="font-family:Nunito;font-size:13px;color:#EAF5DC">' + sub + '</div></div></div>';
+}
+
+function renderAside() {
+  const step = STEP_OF[state.screen] || 1;
+  const stp = i => step > i ? 'done' : (step === i ? 'active' : 'todo');
+  const pills = [
+    [1, 'auto', ICON_CAR.replace('#8CC44A', '#FFFFFF'), 'Auto'],
+    [2, 'contacto', '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><circle cx="9" cy="11" r="2"></circle><path d="M6 16.2c.8-1.4 1.9-2 3-2s2.2.6 3 2M14.5 10h3.5M14.5 13h3.5"></path></svg>', 'Contacto'],
+    [3, 'plan', '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12.6V4.5a1 1 0 0 1 1-1h8.1L20.5 11l-8.9 8.9-8.1-7.3z"></path><circle cx="7.6" cy="7.6" r="1.3"></circle></svg>', 'Plan'],
+    [4, 'identidad', '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="10" r="2.6"></circle><path d="M6.6 18.4c1.3-1.9 3.2-2.9 5.4-2.9s4.1 1 5.4 2.9"></path></svg>', 'Identidad'],
+    [5, 'poliza', '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6l7-3z"></path><path d="M9 12l2.2 2.2L15.5 10"></path></svg>', 'Póliza'],
+    [6, 'pago', '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"></rect><path d="M2.5 10h19"></path></svg>', 'Pago']
+  ];
+  const canBack = state.screen !== 'auto';
+  return '<aside class="side">' +
+    '<div style="display:flex;align-items:center;gap:2px;margin-bottom:10px">' +
+    (canBack ? '<button type="button" data-action="back" class="btn lnk" style="background:none;padding:0 4px 0 0;display:flex;align-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9E9E9E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>' : '') +
+    '<span style="font-family:Nunito;font-size:12px;font-weight:700;color:#9E9E9E">Paso ' + step + ' de 6</span></div>' +
+    '<div class="stepper" style="justify-content:flex-start">' +
+    pills.map((p, idx) => {
+      const [num, screen, svg, label] = p;
+      const sep = idx > 0 ? '<span class="conn"></span>' : '';
+      return sep + '<button type="button" class="pill btn" data-st="' + stp(num) + '" data-action="goStep" data-step="' + num + '">' + svg + '<span class="plabel">' + label + '</span></button>';
+    }).join('') +
+    '</div></aside>';
+}
+
+function renderAuto() {
+  const e = state.err;
+  const cpErr = !!e.cp;
+  const cpDigits = state.cp.map((v, i) => '<input class="dig" data-filled="' + (v !== '' ? 'true' : 'false') + '" data-i="' + i + '" data-action="cpDigit" value="' + esc(v) + '" inputmode="numeric" maxlength="1" style="width:52px;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;text-align:center;font-family:Nunito;font-size:19px;font-weight:700;color:#B5B5B5;outline:none">').join('');
+  const verDis = state.verLoading || !state.marca || !state.anio;
+  const verPh = state.verLoading ? 'Buscando versiones...' : (!state.marca || !state.anio ? 'Selecciona marca y año' : 'Versión');
+  const anios = []; for (let y = 2026; y >= 2012; y--) anios.push(String(y));
+
+  return '<section style="animation:scin .24s ease both">' +
+    '<h1 class="h1"><span style="color:#76B82A">Tú</span> y tu <span style="color:#76B82A">auto</span></h1>' +
+    '<p class="sub">Lo mínimo para darte un precio real.</p>' +
+    '<div class="grid2" style="margin-top:22px">' +
+    fieldWrap({
+      label: 'Nombre completo', filled: state.nombre.trim().length > 1, err: !!e.nombre,
+      input: '<input data-action="nombreInput" value="' + esc(state.nombre) + '" placeholder="¿Cómo te llamas?" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none"><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none">' + ICON_USER + '</span>',
+      errMsg: 'Escribe tu nombre y apellidos'
+    }) +
+    '<div style="display:flex;flex-direction:column;gap:6px">' +
+    '<label style="font-family:Nunito;font-size:13px;font-weight:700;color:#333">Código postal <span style="color:#E2003C">*</span></label>' +
+    '<div class="dgroup" data-err="' + (cpErr ? 'true' : 'false') + '" style="display:flex;gap:12px">' + cpDigits + '</div>' +
+    '<div style="display:flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9E9E9E" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5.5M12 7.8v.2"></path></svg><span style="font-family:Nunito;font-size:12px;color:#8A8A8A">Con esto calculamos el precio de tu seguro.</span></div>' +
+    (cpErr ? '<div style="font-family:Nunito;font-size:12px;color:#E2003C">Ingresa los 5 dígitos de tu código postal</div>' : '') +
+    '</div></div>' +
+    '<div class="grid2" style="margin-top:20px">' +
+    fieldWrap({
+      label: 'Marca y Modelo', filled: !!state.marca, err: !!e.marca,
+      input: '<select data-action="marcaSelect" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none"><option value="">Eje. Nissan March</option>' + Object.keys(MODELOS).map(m => '<option value="' + esc(m) + '"' + (state.marca === m ? ' selected' : '') + '>' + esc(m) + '</option>').join('') + '</select><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none">' + ICON_CHEVRON + '</span>',
+      errMsg: 'Selecciona la marca y modelo'
+    }) +
+    fieldWrap({
+      label: 'Año', filled: !!state.anio, err: !!e.anio,
+      input: '<select data-action="anioSelect" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none"><option value="">Año</option>' + anios.map(a => '<option value="' + a + '"' + (state.anio === a ? ' selected' : '') + '>' + a + '</option>').join('') + '</select><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none">' + ICON_CHEVRON + '</span>',
+      errMsg: 'Selecciona el año'
+    }) +
+    '</div>' +
+    '<div style="margin-top:20px">' +
+    fieldWrap({
+      label: 'Versión', filled: !!state.version, err: !!e.version, dis: verDis,
+      input: '<select data-action="versionSelect" ' + (verDis ? 'disabled' : '') + ' style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none"><option value="">' + verPh + '</option>' + state.versiones.map(v => '<option value="' + esc(v) + '"' + (state.version === v ? ' selected' : '') + '>' + esc(v) + '</option>').join('') + '</select><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none">' + ICON_CHEVRON + '</span>' + (state.verLoading ? '<span style="position:absolute;right:46px;top:50%;transform:translateY(-50%);width:16px;height:16px;border:2px solid #DDE9CE;border-top-color:#76B82A;border-radius:8px;animation:spin .7s linear infinite"></span>' : ''),
+      errMsg: 'Selecciona la versión de tu auto'
+    }) +
+    '</div>' +
+    '<div style="display:flex;justify-content:center;margin-top:26px"><span data-action="goHelp" class="lnk" style="font-family:Nunito;font-size:14px;color:#1F8A3B;text-decoration:underline">¿No encuentras información de tu auto?</span></div>' +
+    '<div style="display:flex;justify-content:flex-end;margin-top:18px"><button type="button" data-action="submitAuto" class="btn" style="width:100%;max-width:380px;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:21px">Continuar</button></div>' +
+    '</section>';
+}
+
+function helpOption(icon, title, sub, action, href) {
+  const tag = href ? 'a href="' + href + '" target="_blank"' : 'div data-action="' + action + '"';
+  const closeTag = href ? 'a' : 'div';
+  return '<' + tag + ' class="opt card lnk" style="background:#fff;border-radius:28px;padding:18px 20px;display:flex;align-items:center;gap:14px;text-decoration:none">' +
+    icon + '<div style="flex:1;min-width:0"><div style="font-family:Nunito;font-weight:800;font-size:16px;color:#0F7B33">' + title + '</div><div style="font-family:Nunito;font-size:12px;color:#7A7A7A">' + sub + '</div></div>' + ICON_ARROW + '</' + closeTag + '>';
+}
+
+function renderHelp() {
+  return '<section style="animation:scin .24s ease both">' +
+    '<h1 class="h1">Te ayudamos a <span style="color:#76B82A">encontrarlo</span></h1>' +
+    '<p class="sub">Algunas versiones no aparecen en la lista. Un asesor lo identifica contigo y sigues con tu cotización sin volver a empezar.</p>' +
+    '<div class="grid2" style="margin-top:22px">' +
+    helpOption(ICON_WA, 'Escríbenos por WhatsApp', 'Dile a un asesor qué vehículo es el que buscas.', null, 'https://wa.me/528000196000') +
+    helpOption(ICON_PHONE, 'Llamar a un asesor', 'Lun a vie 8:00 - 20:00 | sáb 9:00 - 14:00', 'goLlamar') +
+    helpOption(ICON_CLOCK, 'Que me llamen a mí', 'Nos dejas tu número y te marcamos.', 'goMarcamos') +
+    '</div>' +
+    '<div style="display:flex;justify-content:center;margin-top:30px"><span data-action="goAuto" class="lnk" style="font-family:Nunito;font-size:15px;color:#1F8A3B;text-decoration:underline">Volver a intentar</span></div>' +
+    '</section>';
+}
+
+function renderLlamar() {
+  return '<section style="animation:scin .24s ease both;max-width:460px">' +
+    '<h1 class="h1">Llama a un <span style="color:#76B82A">asesor</span></h1>' +
+    '<p class="sub">Lun a vie 8:00 - 20:00 | sáb 9:00 - 14:00</p>' +
+    '<div style="background:#fff;border:1.5px solid #76B82A;border-radius:16px;padding:16px;text-align:center;margin-top:22px">' +
+    '<div style="display:flex;align-items:center;justify-content:center;gap:7px">' + ICON_PHONE.replace('24" height="24"', '17" height="17"') + '<span style="font-family:Nunito;font-weight:700;font-size:15px;color:#1F8A3B">Centro de atención</span></div>' +
+    '<div style="font-family:Nunito;font-weight:800;font-size:26px;color:#333;margin-top:4px">800 019 6000</div></div>' +
+    '<a href="tel:8000196000" class="btn" style="display:flex;align-items:center;justify-content:center;width:100%;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:21px;margin-top:20px;text-decoration:none">Llamar ahora</a>' +
+    '<div style="display:flex;justify-content:center;margin-top:24px"><span data-action="goHelp" class="lnk" style="font-family:Nunito;font-size:15px;color:#1F8A3B;text-decoration:underline">Ver las otras opciones</span></div>' +
+    '</section>';
+}
+
+function renderMarcamos() {
+  const e = state.err;
+  return '<section style="animation:scin .24s ease both;max-width:460px">' +
+    '<h1 class="h1">Te <span style="color:#76B82A">marcamos</span></h1>' +
+    '<p class="sub">Déjanos tu celular y un asesor te llama en menos de 10 minutos dentro del horario de atención.</p>' +
+    '<div style="margin-top:22px">' +
+    fieldWrap({
+      label: 'Teléfono celular', filled: digits(state.telL).length === 10, err: !!e.telL,
+      input: '<input data-action="telLInput" value="' + esc(state.telL) + '" inputmode="numeric" placeholder="55 0000 0000" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none"><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none">' + ICON_PHONE.replace('24" height="24"', '21" height="21"').replace('#1F8A3B', '#A5A5A5') + '</span>',
+      errMsg: 'Ingresa un celular a 10 dígitos'
+    }) + '</div>' +
+    '<button type="button" data-action="solicitar" class="btn" style="width:100%;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:21px;margin-top:20px">Solicitar llamada</button>' +
+    '<div style="display:flex;justify-content:center;margin-top:24px"><span data-action="goHelp" class="lnk" style="font-family:Nunito;font-size:15px;color:#1F8A3B;text-decoration:underline">Ver las otras opciones</span></div>' +
+    '</section>';
+}
+
+function renderLlamamos() {
+  return '<section style="animation:scin .24s ease both;max-width:460px">' +
+    '<h1 class="h1">Te <span style="color:#76B82A">llamamos</span></h1>' +
+    '<p class="sub">Un asesor marcará al ' + esc(state.telLDone || state.telL) + ' en menos de 10 minutos. Mientras, puedes seguir con tu cotización.</p>' +
+    '<button type="button" data-action="goAuto" class="btn" style="width:100%;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:21px;margin-top:22px">Volver a cotizar</button>' +
+    '</section>';
+}
+
+function renderContacto() {
+  const e = state.err;
+  let html = '<section style="animation:scin .24s ease both">' +
+    '<h1 class="h1">¿Dónde te <span style="color:#76B82A">contactamos</span>?</h1>' +
+    '<p class="sub">Con esto te enviamos tu cotización y guardamos tu precio.</p>' +
+    '<div class="grid2" style="margin-top:22px">' +
+    fieldWrap({
+      label: 'Correo electrónico', filled: /.+@.+\..+/.test(state.email), err: !!e.email,
+      input: '<input data-action="emailInput" value="' + esc(state.email) + '" inputmode="email" placeholder="tú@correo.com" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none"><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#A5A5A5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"></rect><path d="M3.8 6.9L12 12.6l8.2-5.7"></path></svg></span>',
+      errMsg: 'Ingresa un correo electrónico válido'
+    }) +
+    fieldWrap({
+      label: 'Teléfono celular', filled: digits(state.tel).length === 10, err: !!e.tel,
+      input: '<input data-action="telInput" value="' + esc(state.tel) + '" inputmode="numeric" placeholder="55 0000 0000" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none"><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none">' + ICON_PHONE.replace('24" height="24"', '21" height="21"').replace('#1F8A3B', '#A5A5A5') + '</span>',
+      errMsg: 'Ingresa un celular a 10 dígitos'
+    }) +
+    '</div>' +
+    '<div style="display:flex;align-items:flex-start;gap:10px;margin-top:18px">' +
+    '<button type="button" data-action="toggleAcepto" class="btn" style="width:22px;height:22px;border-radius:5px;border:1.8px solid #76B82A;background:#fff;flex:none;display:flex;align-items:center;justify-content:center;margin-top:1px;padding:0">' + (state.acepto ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#76B82A" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>' : '') + '</button>' +
+    '<span style="font-family:Nunito;font-size:14px;color:#4A4A4A;line-height:1.35">Acepto recibir mi cotización, así como los <a href="#terminos">Términos y Condiciones</a> y el <a href="#privacidad">Aviso de Privacidad</a></span>' +
+    '</div>' +
+    (e.acepto ? '<div style="font-family:Nunito;font-size:12px;color:#E2003C;margin-top:6px">Necesitas aceptar los términos para continuar</div>' : '');
+
+  if (!state.otpSent) {
+    html += '<div style="display:flex;justify-content:center;margin-top:26px"><button type="button" data-action="sendOtp" class="btn" ' + (state.sending ? 'disabled' : '') + ' style="width:100%;max-width:380px;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:19px;display:flex;align-items:center;justify-content:center;gap:10px">' +
+      (state.sending ? '<span style="width:17px;height:17px;border:2.5px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:9px;animation:spin .7s linear infinite"></span>' : '') +
+      (state.sending ? 'Enviando código...' : 'Enviar código de verificación') + '</button></div>';
+  } else {
+    const otpDigits = state.otp.map((v, i) => '<input class="dig" data-filled="' + (v !== '' ? 'true' : 'false') + '" data-i="' + i + '" data-action="otpDigit" value="' + esc(v) + '" inputmode="numeric" maxlength="1" style="width:52px;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;text-align:center;font-family:Nunito;font-size:19px;font-weight:700;color:#B5B5B5;outline:none">').join('');
+    html += '<div style="background:#fff;border:1.5px solid #76B82A;border-radius:16px;padding:16px 18px;margin-top:22px">' +
+      '<div style="display:flex;align-items:center;gap:8px"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1F8A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4.5H4a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v4l4-4h9a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1z"></path></svg><span style="font-family:Nunito;font-weight:800;font-size:16px;color:#1F8A3B">Verifica tu teléfono</span></div>' +
+      '<div style="font-family:Nunito;font-size:13px;color:#4A4A4A;line-height:1.45;margin-top:6px">Te enviamos un código de 6 dígitos por <b style="color:#1F8A3B">WhatsApp</b> al <b style="color:#1F8A3B">' + esc(state.tel) + '</b>. Escríbelo a continuación para confirmar que el número es tuyo.</div></div>' +
+      '<div style="margin-top:20px">' +
+      '<label style="font-family:Nunito;font-size:13px;font-weight:700;color:#333">Código de verificación <span style="color:#E2003C">*</span></label>' +
+      '<div class="dgroup" data-err="' + (state.otpErr ? 'true' : 'false') + '" style="display:flex;gap:11px;margin-top:8px;animation:' + (state.otpShake ? 'shk .3s ease' : 'none') + '">' + otpDigits + '</div>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px">' +
+      '<span data-action="cambiarNumero" class="lnk" style="display:flex;align-items:center;gap:5px">' + ICON_PHONE.replace('24" height="24"', '14" height="14"') + '<span style="font-family:Nunito;font-size:12px;color:#1F8A3B;text-decoration:underline">Cambiar número</span></span>' +
+      '<span data-action="resend" class="lnk" style="font-family:Nunito;font-size:12px;color:' + (state.resendLeft > 0 ? '#9E9E9E' : '#1F8A3B') + '">' + (state.resendLeft > 0 ? ('Reenviar en ' + state.resendLeft + 's') : 'Reenviar código') + '</span>' +
+      '</div>' +
+      (state.otpErr ? '<div style="font-family:Nunito;font-size:12px;color:#E2003C;margin-top:8px">El código no es correcto. Revísalo e inténtalo de nuevo.</div>' : '') +
+      '</div>' +
+      '<div style="display:flex;justify-content:flex-end;margin-top:30px"><button type="button" data-action="confirmOtp" class="btn" ' + (state.otp.join('').length !== 6 ? 'disabled' : '') + ' style="width:100%;max-width:380px;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:21px">Confirmar y continuar</button></div>';
+  }
+  html += '</section>';
+  return html;
+}
+
+function renderPlan() {
+  const m = money();
+  const vehiculo = (state.marca && state.anio) ? (state.marca + ' ' + state.anio) : (state.marca || 'Tu auto');
+  const planesHtml = COVS.map(c => {
+    const sel = state.cobertura === c.k;
+    const items = state.expandCov ? ITEMS[c.k] : ITEMS[c.k].slice(0, 4);
+    return '<div data-action="pickPlan" data-k="' + c.k + '" class="pcard card lnk" data-sel="' + (sel ? 'true' : 'false') + '" style="background:#fff;border:1.5px solid #FFFFFF;border-radius:22px;padding:16px 18px;width:100%">' +
+      '<div style="display:flex;align-items:flex-start;gap:12px">' +
+      (sel ? '<span style="flex:none;margin-top:2px;display:flex">' + ICON_CHECK_CIRCLE + '</span>' : '<span style="flex:none;margin-top:2px;width:22px;height:22px;border-radius:11px;border:2px solid #7A7A7A;display:block"></span>') +
+      '<div style="flex:1;min-width:0">' +
+      '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:Nunito;font-weight:800;font-size:21px;color:' + (sel ? '#1F8A3B' : '#333333') + '">' + c.n + '</span>' + (c.rec ? '<span style="background:#EAF5DC;color:#5E9D22;font-family:Nunito;font-weight:700;font-size:9px;letter-spacing:.06em;padding:3px 7px;border-radius:5px">RECOMENDADO</span>' : '') + '</div>' +
+      '<div style="font-family:Nunito;font-size:13px;color:#8A8A8A;margin-top:1px">' + c.d + '</div>' +
+      '<div class="only-d" style="font-family:Nunito;font-weight:800;font-size:17px;color:' + (sel ? '#1F8A3B' : '#333333') + ';margin-top:6px">$' + fmt0(cardMonthly(c.k)) + ' MXN al mes</div>' +
+      '</div>' +
+      '<div class="only-m" style="text-align:right;flex:none"><div style="font-family:Nunito;font-weight:800;font-size:17px;color:' + (sel ? '#1F8A3B' : '#333333') + '">$' + fmt0(cardMonthly(c.k)) + ' MXN</div><div style="font-family:Nunito;font-size:12px;color:#8A8A8A">al mes</div></div>' +
+      '</div>' +
+      (sel ? '<div class="only-m" style="display:flex;flex-direction:column;gap:9px;margin-top:14px;padding-left:34px">' +
+        items.map(it => '<div style="display:flex;align-items:center;gap:9px">' + ICON_SHIELD.replace('20" height="20"', '16" height="16"').replace('#8CC44A', '#8CC44A') + '<span style="font-family:Nunito;font-size:13px;color:#5A5A5A">' + esc(it) + '</span></div>').join('') +
+        '<span data-action="toggleCov" class="lnk" style="font-family:Nunito;font-weight:700;font-size:13px;color:#1F8A3B;text-decoration:underline;margin-top:2px">' + (state.expandCov ? 'Ver menos coberturas' : 'Ver todas las coberturas') + '</span></div>' : '') +
+      '</div>';
+  }).join('');
+
+  const freqHtml = FREQS.map(f => '<button type="button" data-action="pickFreq" data-k="' + f.k + '" class="btn" style="height:40px;border-radius:20px;background:' + (state.freq === f.k ? '#76B82A' : '#EDEDED') + ';color:' + (state.freq === f.k ? '#FFFFFF' : '#5A5A5A') + ';font-family:Nunito;font-weight:700;font-size:14px">' + f.n + '</button>').join('');
+
+  return '<section style="animation:scin .24s ease both">' +
+    '<h1 class="h1">Tu <span style="color:#76B82A">plan</span></h1>' +
+    '<p class="sub" style="margin-top:6px">' + esc(vehiculo) + '</p>' +
+    '<div class="grid3" style="margin-top:20px;align-items:start">' + planesHtml + '</div>' +
+    '<div class="only-d" style="text-align:center;margin-top:14px"><span data-action="openCompare" class="lnk" style="font-family:Nunito;font-size:15px;color:#1F8A3B;text-decoration:underline">Ver tabla comparativa de coberturas</span></div>' +
+    '<div style="background:#fff;border-radius:22px;padding:20px;margin-top:20px">' +
+    '<div style="font-family:Nunito;font-weight:800;font-size:19px;color:#333">Forma de pago</div>' +
+    '<div class="grid3" style="margin-top:14px;gap:12px">' + freqHtml + '</div>' +
+    (state.promo ? '<div style="font-family:Nunito;font-size:15px;color:#B5B5B5;text-decoration:line-through;margin-top:16px">$' + fmt2(m.amtBase) + '</div>' : '') +
+    '<div style="display:flex;align-items:baseline;gap:2px;margin-top:6px"><span style="font-family:Inter,sans-serif;font-weight:800;font-size:42px;letter-spacing:-.03em;color:#1F8A3B">$' + fmt2(m.amt) + '</span><span style="font-family:Nunito;font-size:16px;color:#8A8A8A">' + m.unit + '</span></div>' +
+    '<div style="font-family:Nunito;font-size:13px;color:#8A8A8A;margin-top:2px">Precios en pesos mexicanos (MXN)</div>' +
+    (state.freq !== 'anual' ? '<div style="font-family:Nunito;font-weight:700;font-size:13px;color:#1F8A3B;margin-top:2px">Ahorra $' + fmt0(m.ahorroAnual) + ' pagando anual.</div>' : '') +
+    '<div style="background:#EDEDED;border-radius:14px;margin-top:16px;display:flex;align-items:stretch">' +
+    '<div style="flex:1;padding:12px 16px"><div style="font-family:Nunito;font-size:11px;letter-spacing:.05em;color:#8A8A8A">PRIMER PAGO HOY</div><div style="font-family:Nunito;font-weight:800;font-size:15px;color:#333;margin-top:2px">$' + fmt2(m.amt) + ' MXN</div></div>' +
+    (m.after > 0 ? '<div style="width:1px;background:#D5D5D5;margin:10px 0"></div><div style="flex:1;padding:12px 16px"><div style="font-family:Nunito;font-size:11px;letter-spacing:.05em;color:#8A8A8A">DESPUÉS</div><div style="font-family:Nunito;font-weight:800;font-size:15px;color:#333;margin-top:2px">' + m.after + ' Pagos De $' + fmt2(m.amt) + ' MXN</div></div>' : '') +
+    '</div>' +
+    (!state.promo ?
+      '<div style="background:#5FA828;border-radius:14px;margin-top:14px;padding:10px 12px 10px 16px;display:flex;align-items:center;gap:12px">' +
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12.6V4.5a1 1 0 0 1 1-1h8.1L20.5 11l-8.9 8.9-8.1-7.3z"></path><circle cx="7.6" cy="7.6" r="1.3"></circle></svg>' +
+      '<div style="flex:1;min-width:0"><div style="font-family:Nunito;font-weight:700;font-size:13px;color:#FFFFFF">10% de descuento · Mundial 2026</div><div style="font-family:Nunito;font-size:12px;color:#DCEFC8">Válido hasta el 31 de agosto</div></div>' +
+      '<button type="button" data-action="applyPromo" class="btn" ' + (state.promoLoading ? 'disabled' : '') + ' style="background:#FFFFFF;color:#5E9D22;font-family:Nunito;font-weight:700;font-size:14px;border-radius:18px;padding:9px 20px;flex:none;display:flex;align-items:center;gap:8px">' + (state.promoLoading ? '<span style="width:13px;height:13px;border:2px solid #DDE9CE;border-top-color:#5E9D22;border-radius:7px;animation:spin .7s linear infinite"></span>' : '') + (state.promoLoading ? 'Aplicando' : 'Aplicar') + '</button></div>' :
+      '<div style="background:#EAF5DC;border-radius:14px;margin-top:14px;padding:10px 12px 10px 16px;display:flex;align-items:center;gap:12px">' +
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8CC44A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12.6V4.5a1 1 0 0 1 1-1h8.1L20.5 11l-8.9 8.9-8.1-7.3z"></path><circle cx="7.6" cy="7.6" r="1.3"></circle></svg>' +
+      '<div style="flex:1;min-width:0"><div style="font-family:Nunito;font-weight:700;font-size:13px;color:#5E9D22">10% de descuento · Mundial 2026</div><div style="font-family:Nunito;font-size:12px;color:#8FA97A">Ahorras $' + fmt0(m.ahorroPromo) + ' MXN en el total de tu póliza.</div></div>' +
+      '<button type="button" data-action="removePromo" class="btn" style="background:none;color:#7A7A7A;font-family:Nunito;font-weight:700;font-size:14px;padding:9px 12px;flex:none">Quitar</button></div>') +
+    '</div>' +
+    '<div style="display:flex;justify-content:flex-end;margin-top:24px"><button type="button" data-action="toIdentidad" class="btn" style="width:100%;max-width:380px;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:21px">Confirmar y continuar</button></div>' +
+    '</section>';
+}
+
+function renderIdentidad() {
+  return '<section style="animation:scin .24s ease both">' +
+    '<h1 class="h1">Confirma tu <span style="color:#76B82A">identidad</span></h1>' +
+    '<p class="sub">Validamos tu identidad para emitir tu póliza con tus datos correctos y evitar errores en la contratación.</p>' +
+    '<p class="sub" style="margin-top:14px">Elige cómo prefieres compartir tus datos.</p>' +
+    '<div class="grid2" style="margin-top:22px">' +
+    '<div data-action="scanIne" class="opt card lnk" style="background:#fff;border-radius:28px;padding:18px 20px;display:flex;align-items:center;gap:14px">' +
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5FA828" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.2"></circle><path d="M5.5 20c1-3.2 3.6-5 6.5-5s5.5 1.8 6.5 5"></path></svg>' +
+    '<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:Nunito;font-weight:800;font-size:16px;color:#0F7B33">Escanear mi INE</span><span style="background:#EAF5DC;color:#5E9D22;font-family:Nunito;font-weight:700;font-size:9px;letter-spacing:.06em;padding:3px 7px;border-radius:5px">RECOMENDADO</span></div><div style="font-family:Nunito;font-size:12px;color:#7A7A7A">Más rápido (menos de 30 segundos)</div></div></div>' +
+    '<div data-action="manualIne" class="opt card lnk" style="background:#fff;border-radius:28px;padding:18px 20px;display:flex;align-items:center;gap:14px">' +
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5FA828" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L20 8l-4-4L4 16v4z"></path></svg>' +
+    '<div style="flex:1;min-width:0"><div style="font-family:Nunito;font-weight:800;font-size:16px;color:#0F7B33">Capturar mis datos manualmente</div><div style="font-family:Nunito;font-size:12px;color:#7A7A7A">Captura tu información paso a paso</div></div></div>' +
+    '</div></section>';
+}
+
+function renderIne() {
+  return '<section style="animation:scin .24s ease both">' +
+    '<h1 class="h1">Confirma tu <span style="color:#76B82A">identidad</span></h1>' +
+    '<div style="max-width:400px;margin:26px auto 0;position:relative;border-radius:14px;overflow:hidden;background:linear-gradient(150deg,#1F8A3B,#0B5E27);padding:18px;aspect-ratio:1.6">' +
+    '<div style="position:absolute;left:14px;right:14px;top:14px;bottom:14px;border:2px solid rgba(255,255,255,.85);border-radius:6px"></div>' +
+    '<div style="display:flex;justify-content:space-between;position:relative"><span style="font-family:Nunito;font-weight:800;font-size:10px;letter-spacing:.04em;color:#fff">INSTITUTO NACIONAL ELECTORAL</span><span style="font-family:Nunito;font-size:10px;color:rgba(255,255,255,.75)">MÉXICO</span></div>' +
+    '<div style="display:flex;gap:14px;margin-top:16px;position:relative">' +
+    '<div style="width:26%;aspect-ratio:.8;border-radius:8px;background:rgba(255,255,255,.32);animation:pulse 1.4s ease-in-out infinite"></div>' +
+    '<div style="flex:1;display:flex;flex-direction:column;gap:9px;padding-top:4px">' +
+    '<div style="height:9px;border-radius:5px;background:rgba(255,255,255,.32);animation:pulse 1.4s ease-in-out infinite"></div>' +
+    '<div style="height:9px;width:72%;border-radius:5px;background:rgba(255,255,255,.32);animation:pulse 1.4s .15s ease-in-out infinite"></div>' +
+    '<div style="height:9px;width:86%;border-radius:5px;background:rgba(255,255,255,.32);animation:pulse 1.4s .3s ease-in-out infinite"></div>' +
+    '<div style="height:9px;width:48%;border-radius:5px;background:rgba(255,255,255,.32);animation:pulse 1.4s .45s ease-in-out infinite"></div>' +
+    '</div></div>' +
+    '<div style="position:absolute;left:26px;right:26px;bottom:26px;height:9px;border-radius:5px;background:rgba(255,255,255,.32);animation:pulse 1.4s .6s ease-in-out infinite"></div>' +
+    '<div style="position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#BFE39A,transparent);animation:scan 1.6s ease-in-out infinite alternate"></div>' +
+    '</div>' +
+    '<div style="text-align:center;font-family:Nunito;font-size:16px;color:#4A4A4A;margin-top:20px">Leyendo tu identificación...</div>' +
+    '</section>';
+}
+
+function renderDatos() {
+  const e = state.err, d = state.d;
+  const deAny = Object.keys(e).some(k => k.indexOf('d') === 0);
+  const cpStr = state.cp.join('');
+  return '<section style="animation:scin .24s ease both">' +
+    '<h1 class="h1">Verifiquemos tu <span style="color:#76B82A">identidad</span></h1>' +
+    (state.identMode === 'ine' ? '<div style="background:#fff;border:1.5px solid #76B82A;border-radius:16px;padding:14px 18px;margin-top:18px"><div style="display:flex;align-items:center;gap:8px">' + ICON_CHECK_CIRCLE.replace('22" height="22"', '18" height="18"') + '<span style="font-family:Nunito;font-weight:800;font-size:16px;color:#1F8A3B">¡Listo! Ya validamos tu identidad.</span></div><div style="font-family:Nunito;font-size:13px;color:#5A5A5A;margin-top:4px">Completamos automáticamente tu información. Solo verifica que estén correctos.</div></div>' : '') +
+    (state.identMode === 'manual' ? '<div style="background:#EAF5DC;border-radius:16px;padding:14px 18px;margin-top:18px;display:flex;align-items:flex-start;gap:12px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8CC44A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px"><path d="M4 20h4L20 8l-4-4L4 16v4z"></path></svg><div><div style="font-family:Nunito;font-weight:800;font-size:15px;color:#5E9D22">Sin problema, completa tus datos aquí</div><div style="font-family:Nunito;font-size:13px;color:#8FA97A;margin-top:2px">Solo necesitamos unos datos para verificar tu identidad.</div></div></div>' : '') +
+    '<div class="grid2" style="margin-top:20px">' +
+    fieldWrap({ label: 'Nombre(s)', filled: !!d.nombre, err: !!e.dnombre, input: '<input data-action="dInput" data-field="nombre" value="' + esc(d.nombre) + '" placeholder="Nombre(s)" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none"><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none">' + ICON_USER + '</span>' }) +
+    fieldWrap({ label: 'Apellidos', filled: !!d.apellidos, err: !!e.dapellidos, input: '<input data-action="dInput" data-field="apellidos" value="' + esc(d.apellidos) + '" placeholder="Apellidos" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none"><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none">' + ICON_USER + '</span>' }) +
+    '</div>' +
+    '<div class="half" style="margin-top:16px">' +
+    fieldWrap({ label: 'Fecha de nacimiento', filled: /^\d{2}\/\d{2}\/\d{4}$/.test(d.fecha), err: !!e.dfecha, errMsg: 'Usa el formato DD/MM/AAAA',
+      input: '<input data-action="dFechaInput" value="' + esc(d.fecha) + '" inputmode="numeric" placeholder="DD/MM/AAAA" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none"><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#A5A5A5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20h14M6.8 20v-6.4h10.4V20M9.4 13.6V11M12 13.6V10M14.6 13.6V11"></path><circle cx="12" cy="6.6" r="1.2"></circle></svg></span>' }) +
+    fieldWrap({ label: 'Código postal', dis: true, filled: true,
+      input: '<input value="' + esc(cpStr) + '" disabled style="width:100%;height:52px;border-radius:26px;border:1.5px solid #D5D5D5;background:#D5D5D5;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#8A8A8A;outline:none"><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#A5A5A5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"></path><circle cx="12" cy="10" r="2.6"></circle></svg></span>' }) +
+    '</div>' +
+    '<div style="margin-top:16px">' +
+    fieldWrap({ label: 'Calle', filled: !!d.calle, err: !!e.dcalle, input: '<input data-action="dInput" data-field="calle" value="' + esc(d.calle) + '" placeholder="Calle" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none"><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#A5A5A5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"></path><circle cx="12" cy="10" r="2.6"></circle></svg></span>' }) +
+    '</div>' +
+    '<div class="lastrow half" style="margin-top:16px">' +
+    fieldWrap({ label: 'Colonia', filled: !!d.colonia, err: !!e.dcolonia, input: '<input data-action="dInput" data-field="colonia" value="' + esc(d.colonia) + '" placeholder="Colonia" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 46px 0 18px;font-family:Nunito;font-size:15px;color:#333;outline:none">' }) +
+    fieldWrap({ label: 'Municipio', filled: !!d.municipio, err: !!e.dmunicipio, input: '<input data-action="dInput" data-field="municipio" value="' + esc(d.municipio) + '" placeholder="Municipio" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 46px 0 18px;font-family:Nunito;font-size:15px;color:#333;outline:none">' }) +
+    fieldWrap({ label: 'Num. Ext', filled: !!d.numext, err: !!e.dnumext, input: '<input data-action="dInput" data-field="numext" value="' + esc(d.numext) + '" placeholder="Num. Ext" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 46px 0 18px;font-family:Nunito;font-size:15px;color:#333;outline:none">' }) +
+    fieldWrap({ label: 'Num. Int', req: false, filled: !!d.numint, input: '<input data-action="dInput" data-field="numint" value="' + esc(d.numint) + '" placeholder="Num. Int" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 46px 0 18px;font-family:Nunito;font-size:15px;color:#333;outline:none">' }) +
+    '</div>' +
+    (deAny ? '<div style="font-family:Nunito;font-size:12px;color:#E2003C;margin-top:14px">Completa los campos obligatorios para continuar.</div>' : '') +
+    '<div style="display:flex;justify-content:center;margin-top:26px"><button type="button" data-action="submitDatos" class="btn" style="width:100%;max-width:380px;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:21px">' + (state.identMode === 'ine' ? 'Confirmar y continuar' : 'Continuar') + '</button></div>' +
+    '</section>';
+}
+
+function renderPoliza() {
+  const e = state.err;
+  const nivHelp = '<div style="background:#fff;border-radius:22px;padding:18px"><div style="font-family:Nunito;font-weight:800;font-size:17px;color:#333">¿Dónde encuentro mi NIV?</div><div class="grid2" style="margin-top:14px;gap:14px">' +
+    ph('Auto / parabrisas', 'aspect-ratio:1.5;border-radius:10px') + '<div style="font-family:Nunito;font-weight:700;font-size:13px;color:#333;text-align:center;margin-top:8px">En el parabrisas</div><div style="font-family:Nunito;font-size:12px;color:#8A8A8A;text-align:center;margin-bottom:8px">Esquina inferior, del lado del conductor</div>' +
+    ph('Tarjeta de circulación', 'aspect-ratio:1.5;border-radius:10px') + '<div style="font-family:Nunito;font-weight:700;font-size:13px;color:#333;text-align:center;margin-top:8px">En tu tarjeta de circulación</div><div style="font-family:Nunito;font-size:12px;color:#8A8A8A;text-align:center">Esquina inferior, del lado del conductor</div>' +
+    '</div><div style="background:#EAF5DC;border-radius:14px;padding:12px;margin-top:14px;display:flex;align-items:flex-start;gap:12px"><span style="font-size:22px">🐾</span><div><div style="font-family:Nunito;font-weight:800;font-size:14px;color:#5E9D22">¿No lo encuentras?</div><div style="font-family:Nunito;font-size:13px;color:#5A5A5A;margin-top:2px">A veces se esconde bajo el cofre o en la puerta del conductor.</div></div></div></div>';
+
+  return '<section style="animation:scin .24s ease both">' +
+    '<h1 class="h1">¡Tu <span style="color:#76B82A">póliza</span> está casi lista!</h1>' +
+    '<p class="sub">Solo necesitamos el número de serie (NIV) de tu auto para emitir tu póliza.</p>' +
+    '<div class="grid2n" style="margin-top:22px;align-items:start">' +
+    '<div>' +
+    fieldWrap({
+      label: 'Número de serie (NIV) de tu auto', filled: state.niv.length === 17, err: !!e.niv,
+      input: '<input data-action="nivInput" value="' + esc(state.niv) + '" maxlength="17" placeholder="Ej. 3N1AB7AP8KY000000" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none;text-transform:uppercase">' + ICON_CAR.replace('20" height="20"', '21" height="21"'),
+      note: '<div style="display:flex;justify-content:space-between;gap:10px">' + (e.niv ? '<span style="font-family:Nunito;font-size:12px;color:#E2003C">El NIV debe tener 17 caracteres</span>' : '') + '<span style="font-family:Nunito;font-size:12px;color:#9E9E9E;margin-left:auto">' + state.niv.length + '/17 · Son 17 caracteres</span></div>'
+    }) +
+    '<div class="only-m" style="margin-top:18px">' + nivHelp + '</div>' +
+    '<div style="margin-top:18px">' + fieldWrap({
+      label: 'RFC', filled: state.rfc.length === 13, err: !!e.rfc, errMsg: 'El RFC debe tener 13 caracteres',
+      input: '<input data-action="rfcInput" value="' + esc(state.rfc) + '" maxlength="13" placeholder="Ej. XAXX010101000" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none;text-transform:uppercase"><span class="ic" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#A5A5A5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="10" r="2.6"></circle><path d="M6.6 18.4c1.3-1.9 3.2-2.9 5.4-2.9s4.1 1 5.4 2.9"></path></svg></span>',
+      note: '<div style="display:flex;align-items:flex-start;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9E9E9E" stroke-width="1.9" stroke-linecap="round" style="margin-top:2px;flex:none"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5.5M12 7.8v.2"></path></svg><span style="font-family:Nunito;font-size:12px;color:#8A8A8A;line-height:1.35">Generamos tu RFC automáticamente con tus datos.<br>Revísalo y corrígelo si algo no coincide.</span></div>'
+    }) + '</div>' +
+    '<div style="display:flex;align-items:flex-start;gap:10px;margin-top:18px">' +
+    '<button type="button" data-action="toggleFactura" class="btn" style="width:22px;height:22px;border-radius:5px;border:1.8px solid #76B82A;background:#fff;flex:none;display:flex;align-items:center;justify-content:center;margin-top:1px;padding:0">' + (state.factura ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#76B82A" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>' : '') + '</button>' +
+    '<div><div style="font-family:Nunito;font-weight:700;font-size:15px;color:#333">Necesito factura</div><div style="font-family:Nunito;font-size:13px;color:#7A7A7A;line-height:1.35">Usamos estos datos fiscales solo para emitir tu factura (CFDI) ante el SAT a tu nombre. Si no la necesitas, puedes omitir este paso.</div></div>' +
+    '</div></div>' +
+    '<div class="only-d">' + nivHelp + '<div style="display:flex;justify-content:flex-end;margin-top:22px"><button type="button" data-action="submitPoliza" class="btn" style="width:100%;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:21px">Continuar</button></div></div>' +
+    '</div>' +
+    '<div class="only-m" style="margin-top:24px"><button type="button" data-action="submitPoliza" class="btn" style="width:100%;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:21px">Continuar</button></div>' +
+    '</section>';
+}
+
+function renderPago() {
+  const m = money();
+  const vehiculo = (state.marca && state.anio) ? (state.marca + ' ' + state.anio) : (state.marca || 'Tu auto');
+  const covName = (COVS.find(c => c.k === state.cobertura) || {}).n;
+  const e = state.err;
+  return '<section style="animation:scin .24s ease both">' +
+    '<h1 class="h1">Antes de emitir <span style="color:#76B82A">tu póliza</span></h1>' +
+    '<p class="sub">Confirma que la información sea correcta y continúa con el pago.</p>' +
+    '<div class="grid2n" style="margin-top:22px;align-items:start">' +
+    '<div style="background:#fff;border-radius:22px;padding:20px;width:100%">' +
+    '<div style="font-family:Nunito;font-weight:800;font-size:19px;color:#333">Tu seguro</div>' +
+    summaryRow(ICON_CAR, 'Vehículo', esc(vehiculo)) +
+    summaryRow(ICON_SHIELD, 'Cobertura', covName) +
+    '<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #EDEDED">' + ICON_CARD + '<span style="font-family:Nunito;font-size:14px;color:#4A4A4A">Forma de pago</span>' +
+    '<span style="margin-left:auto;position:relative;display:flex;align-items:center"><select data-action="freqSelect" style="appearance:none;border:none;background:none;font-family:Nunito;font-size:14px;color:#333;padding-right:22px;outline:none;cursor:pointer;text-align:right">' +
+    FREQS.map(f => '<option value="' + f.k + '"' + (state.freq === f.k ? ' selected' : '') + '>' + f.n + '</option>').join('') + '</select>' +
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8CC44A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:0;pointer-events:none"><path d="M5 9l7 7 7-7"></path></svg></span></div>' +
+    (state.promo ? '<div style="padding:12px 0 0"><div style="font-family:Nunito;font-weight:700;font-size:13px;color:#333">Promoción</div><div style="display:flex;justify-content:space-between;gap:10px;margin-top:4px"><span style="font-family:Nunito;font-weight:700;font-size:13px;color:#1F8A3B">10% DE DESCUENTO - MUNDIAL 2026</span><span style="font-family:Nunito;font-weight:700;font-size:13px;color:#1F8A3B;white-space:nowrap">- $' + fmt0(m.ahorroPromo) + ' MXN</span></div></div>' : '') +
+    '<div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;align-items:baseline"><span style="font-family:Nunito;font-size:12px;color:#8A8A8A">Costo total de tu póliza</span><span style="text-align:right;white-space:nowrap">' +
+    (state.promo ? '<span style="font-family:Nunito;font-size:12px;color:#B5B5B5;text-decoration:line-through;margin-right:6px">$' + fmt0(m.totalBase) + ' MXN</span>' : '') +
+    '<span style="font-family:Nunito;font-weight:700;font-size:13px;color:#333">$' + fmt0(m.totalFinal) + ' MXN</span></span></div>' +
+    '<div style="border-top:1px solid #EDEDED;padding-top:12px">' +
+    (state.promo ? '<div style="text-align:right;font-family:Nunito;font-size:13px;color:#B5B5B5;text-decoration:line-through">$' + fmt2(m.amtBase) + ' MXN</div>' : '') +
+    '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="font-family:Inter,sans-serif;font-weight:800;font-size:22px;color:#333;letter-spacing:-.02em">Total a pagar</span><span style="font-family:Inter,sans-serif;font-weight:800;font-size:28px;color:#1F8A3B;letter-spacing:-.02em;white-space:nowrap">$' + fmt0(m.amt) + ' MXN</span></div>' +
+    (m.after > 0 ? '<div style="display:flex;align-items:center;gap:6px;margin-top:6px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8CC44A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 13.7-5.6M20 12a8 8 0 0 1-13.7 5.6"></path><path d="M17 3.4v3.3h-3.3M7 20.6v-3.3h3.3"></path></svg><span style="font-family:Nunito;font-size:13px;color:#5A5A5A">Después: <b style="color:#1F8A3B">' + m.after + ' pagos de $' + fmt0(m.amt) + ' MXN</b></span></div>' : '') +
+    '</div></div>' +
+    '<div><div style="background:#fff;border-radius:22px;padding:20px">' +
+    '<div style="font-family:Nunito;font-weight:800;font-size:19px;color:#333">Método de pago</div>' +
+    '<div style="margin-top:14px">' + fieldWrap({
+      label: 'Número de la tarjeta', req: false, filled: digits(state.card).length === 16, err: !!e.card, errMsg: 'Ingresa los 16 dígitos de tu tarjeta',
+      input: '<input data-action="cardInput" value="' + esc(state.card) + '" inputmode="numeric" placeholder="0000 0000 0000 0000" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 50px 0 20px;font-family:Nunito;font-size:15px;color:#333;outline:none">' + ICON_CARD.replace('20" height="20"', '21" height="21"')
+    }) + '</div>' +
+    '<div class="half" style="margin-top:14px">' +
+    fieldWrap({ label: 'Vencimiento', req: false, filled: /^\d{2}\/\d{2}$/.test(state.exp), err: !!e.exp, errMsg: 'MM/AA', input: '<input data-action="expInput" value="' + esc(state.exp) + '" inputmode="numeric" placeholder="MM/AA" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 46px 0 18px;font-family:Nunito;font-size:15px;color:#333;outline:none">' + ICON_CARD.replace('20" height="20"', '20" height="20"') }) +
+    fieldWrap({ label: 'CVV', req: false, filled: state.cvv.length === 3, err: !!e.cvv, errMsg: '3 dígitos', input: '<input data-action="cvvInput" value="' + esc(state.cvv) + '" inputmode="numeric" maxlength="3" placeholder="123" style="width:100%;height:52px;border-radius:26px;border:1.5px solid #E0E0E0;background:#fff;padding:0 46px 0 18px;font-family:Nunito;font-size:15px;color:#333;outline:none">' + ICON_CARD.replace('20" height="20"', '20" height="20"') }) +
+    '</div></div>' +
+    (state.payError ? '<div style="background:#FDE9EE;border:1.5px solid #E2003C;border-radius:16px;padding:14px 16px;margin-top:16px"><div style="font-family:Nunito;font-weight:800;font-size:15px;color:#E2003C">No pudimos procesar tu pago</div><div style="font-family:Nunito;font-size:13px;color:#8A5561;margin-top:2px">Revisa los datos de tu tarjeta o intenta con otra.</div></div>' : '') +
+    '<button type="button" data-action="pay" class="btn" ' + (state.paying ? 'disabled' : '') + ' style="width:100%;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:20px;margin-top:18px;display:flex;align-items:center;justify-content:center;gap:10px">' +
+    (state.paying ? '<span style="width:18px;height:18px;border:2.5px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:9px;animation:spin .7s linear infinite"></span>' : '') +
+    (state.paying ? 'Procesando pago...' : ('Confirmar pago de $' + fmt0(m.amt) + ' MXN')) + '</button>' +
+    '</div></div>' +
+    '</section>';
+}
+function summaryRow(icon, label, value) {
+  return '<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #EDEDED">' + icon + '<span style="font-family:Nunito;font-size:14px;color:#4A4A4A">' + label + '</span><span style="font-family:Nunito;font-size:14px;color:#333;margin-left:auto;text-align:right">' + value + '</span></div>';
+}
+
+function renderListo() {
+  const m = money();
+  const vehiculo = (state.marca && state.anio) ? (state.marca + ' ' + state.anio) : (state.marca || 'Tu auto');
+  const covName = (COVS.find(c => c.k === state.cobertura) || {}).n;
+  const freqName = (FREQS.find(f => f.k === state.freq) || {}).n;
+  const vig = new Date(); vig.setFullYear(vig.getFullYear() + 1);
+  const mesesEs = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  const vigencia = vig.getDate() + ' ' + mesesEs[vig.getMonth()] + ' ' + vig.getFullYear();
+  return '<main style="animation:scin .24s ease both;padding:20px 20px 80px;max-width:1220px;margin:0 auto;width:100%">' +
+    '<div class="grid2n" style="align-items:start">' +
+    '<div style="position:relative;background:#76B82A;border-radius:16px;padding:26px 20px 0;overflow:hidden;min-height:420px;display:flex;flex-direction:column;width:100%">' +
+    '<div style="text-align:center;position:relative;z-index:2"><div style="font-family:Inter,sans-serif;font-weight:800;font-size:28px;color:#fff;letter-spacing:-.02em">¡Bienvenido a HDI!</div><div style="font-family:Nunito;font-weight:800;font-size:16px;color:#fff;margin-top:6px">Gracias por confiar en nosotros. 🐾</div></div>' +
+    '<div style="background:#fff;border-radius:14px;padding:14px 16px;max-width:220px;margin:22px auto 0;position:relative;z-index:2"><div style="font-family:Nunito;font-weight:800;font-size:15px;color:#333"><span style="color:#76B82A">¡Guau!</span> Tu auto ya está protegido.</div><div style="font-family:Nunito;font-size:13px;color:#7A7A7A;margin-top:4px">En unos minutos recibirás tu póliza en tu correo.</div></div>' +
+    '<div style="flex:1;min-height:220px;margin-top:8px;display:flex;align-items:center;justify-content:center">' + ph('Hugo celebrando 🎉', 'width:100%;height:100%;border:none;background:transparent;color:#EAF5DC;font-size:15px') + '</div>' +
+    '</div>' +
+    '<div style="width:100%">' +
+    '<h1 class="h1">¡Todo <span style="color:#76B82A">listo</span>!</h1>' +
+    '<p class="sub">Tu póliza ya está activa</p>' +
+    '<div style="background:#fff;border-radius:22px;padding:20px;margin-top:18px;width:100%">' +
+    '<div style="font-family:Nunito;font-weight:800;font-size:19px;color:#333">Resumen</div>' +
+    summaryRow(ICON_CAR, 'Vehículo', esc(vehiculo)) +
+    summaryRow(ICON_SHIELD, 'Cobertura', covName) +
+    summaryRow(ICON_CARD, 'Forma de pago', freqName) +
+    summaryRow(ICON_CLOCK, 'Vigencia', vigencia) +
+    summaryRow('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8CC44A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6l7-3z"></path><path d="M9 12l2.2 2.2L15.5 10"></path></svg>', 'No. póliza', 'HDI-88214') +
+    '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-top:14px"><span style="font-family:Inter,sans-serif;font-weight:800;font-size:20px;color:#333;letter-spacing:-.02em">Pago realizado</span><span style="font-family:Inter,sans-serif;font-weight:800;font-size:26px;color:#1F8A3B;letter-spacing:-.02em;white-space:nowrap">$' + fmt0(m.amt) + ' MXN</span></div>' +
+    '</div>' +
+    '<button type="button" data-action="descargar" class="btn" style="width:100%;height:62px;border-radius:31px;background:#76B82A;color:#fff;font-family:Nunito;font-weight:800;font-size:20px;margin-top:18px">Descargar Póliza</button>' +
+    '<div style="border:1.5px solid #76B82A;border-radius:16px;padding:16px 18px;margin-top:18px;background-color:#FFFFFF">' +
+    '<div style="display:flex;align-items:center;gap:8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1F8A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 18h5M10 21h4M12 3a6 6 0 0 0-3.3 11v2h6.6v-2A6 6 0 0 0 12 3z"></path></svg><span style="font-family:Nunito;font-weight:800;font-size:16px;color:#1F8A3B">¿Qué sigue?</span></div>' +
+    '<div class="grid3" style="margin-top:14px;gap:14px">' +
+    nextStep('Descarga la App HDI', 'Te enviaremos tu póliza en unos minutos.') +
+    nextStep('Revisa tu correo', 'Te enviaremos tu póliza en unos minutos.') +
+    nextStep('Guarda tu póliza', 'Descárgala y tenla siempre a la mano.') +
+    '</div></div>' +
+    '</div></div></main>';
+}
+function nextStep(title, sub) {
+  return '<div><div style="display:flex;align-items:center;gap:7px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1F8A3B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"></rect><path d="M3.8 6.9L12 12.6l8.2-5.7"></path></svg><span style="font-family:Nunito;font-weight:700;font-size:14px;color:#1F8A3B">' + title + '</span></div><div style="font-family:Nunito;font-size:12px;color:#5A5A5A;margin-top:2px;padding-left:24px">' + sub + '</div></div>';
+}
+
+function renderCompareModal() {
+  if (!state.compare) return '';
+  const rows = ALL_ITEMS.map(n => {
+    const rc = ITEMS.rc.indexOf(n) > -1, lim = ITEMS.lim.indexOf(n) > -1, amp = ITEMS.amp.indexOf(n) > -1;
+    return '<span style="font-family:Nunito;font-size:13px;color:#4A4A4A;padding:11px 8px 11px 0;border-top:1px solid #EDEDED">' + esc(n) + '</span>' +
+      '<span class="cell" data-on="' + rc + '" style="font-family:Nunito;font-weight:800;font-size:15px;color:#76B82A;text-align:center;padding:11px 0;border-top:1px solid #EDEDED">' + (rc ? '✓' : '—') + '</span>' +
+      '<span class="cell" data-on="' + lim + '" style="font-family:Nunito;font-weight:800;font-size:15px;color:#76B82A;text-align:center;padding:11px 0;border-top:1px solid #EDEDED">' + (lim ? '✓' : '—') + '</span>' +
+      '<span class="cell" data-on="' + amp + '" style="font-family:Nunito;font-weight:800;font-size:15px;color:#76B82A;text-align:center;padding:11px 0;border-top:1px solid #EDEDED">' + (amp ? '✓' : '—') + '</span>';
+  }).join('');
+  return '<div data-action="closeCompareBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;animation:scin .18s ease both">' +
+    '<div style="background:#fff;border-radius:20px;padding:24px;max-width:760px;width:100%;max-height:86vh;overflow:auto">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><span style="font-family:Nunito;font-weight:800;font-size:20px;color:#333">Tabla comparativa de coberturas</span><button type="button" data-action="closeCompare" class="btn" style="background:none;padding:4px">' + ICON_CLOSE + '</button></div>' +
+    '<div style="display:grid;grid-template-columns:minmax(0,1fr) 72px 72px 72px;gap:0;margin-top:18px;align-items:center">' +
+    '<span></span><span style="font-family:Nunito;font-weight:800;font-size:13px;color:#333;text-align:center">R.C.</span><span style="font-family:Nunito;font-weight:800;font-size:13px;color:#333;text-align:center">Limitada</span><span style="font-family:Nunito;font-weight:800;font-size:13px;color:#1F8A3B;text-align:center">Amplia</span>' +
+    rows + '</div></div></div>';
+}
+
+function renderHelpModal() {
+  if (!state.helpOpen) return '';
+  return '<div data-action="closeHelpBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:95;display:flex;align-items:flex-end;justify-content:center;padding:0;animation:scin .18s ease both">' +
+    '<div style="background:#EAEAEA;border-radius:22px 22px 0 0;padding:22px 20px 32px;max-width:560px;width:100%">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><span style="font-family:Nunito;font-weight:800;font-size:19px;color:#333">¿Necesitas ayuda?</span><button type="button" data-action="closeHelp" class="btn" style="background:none;padding:4px">' + ICON_CLOSE + '</button></div>' +
+    '<div style="display:flex;flex-direction:column;gap:12px;margin-top:16px">' +
+    helpOption(ICON_WA, 'Escríbenos por WhatsApp', 'Dile a un asesor qué vehículo es el que buscas.', null, 'https://wa.me/528000196000') +
+    helpOption(ICON_PHONE, 'Llamar a un asesor', 'Lun a vie 8:00 - 20:00 | sáb 9:00 - 14:00', 'goLlamar') +
+    helpOption(ICON_CLOCK, 'Que me llamen a mí', 'Nos dejas tu número y te marcamos.', 'goMarcamos') +
+    '</div></div></div>';
+}
+
+function renderToast() {
+  if (!state.toast) return '';
+  return '<div style="position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#333;color:#fff;font-family:Nunito;font-weight:700;font-size:14px;padding:12px 20px;border-radius:24px;z-index:99;animation:scin .2s ease both">' + esc(state.toast) + '</div>';
+}
+
+function renderMain() {
+  const s = state.screen;
+  if (s === 'landing') return renderLanding();
+  const inner =
+    s === 'auto' ? renderAuto() :
+    s === 'help' ? renderHelp() :
+    s === 'llamar' ? renderLlamar() :
+    s === 'marcamos' ? renderMarcamos() :
+    s === 'llamamos' ? renderLlamamos() :
+    s === 'contacto' ? renderContacto() :
+    s === 'plan' ? renderPlan() :
+    s === 'identidad' ? renderIdentidad() :
+    s === 'ine' ? renderIne() :
+    s === 'datos' ? renderDatos() :
+    s === 'poliza' ? renderPoliza() :
+    s === 'pago' ? renderPago() : '';
+  return '<main class="shell">' + renderAside() + '<div style="min-width:0">' + inner + '</div></main>';
+}
+
+function render() {
+  const sig = [state.cobertura, state.freq, state.promo ? 1 : 0, state.expandCov ? 1 : 0, state.compare ? 1 : 0].join('|');
+  const root = $('screenRoot');
+  root.setAttribute('data-screen', state.screen);
+  root.setAttribute('data-sig', sig);
+  const isListo = state.screen === 'listo';
+  root.innerHTML = renderHeader() + renderPromo() + (isListo ? renderListo() : renderMain()) + renderCompareModal() + renderHelpModal() + renderToast();
+  postScreenIfChanged();
+}
+
+// ----------------------------------------------------------------------------
+// Eventos (delegación sobre el contenedor raíz)
+// ----------------------------------------------------------------------------
+
+const root = $('screenRoot');
+
+root.addEventListener('click', ev => {
+  const t = ev.target;
+  const actionEl = t.closest('[data-action]');
+  if (!actionEl) return;
+  const action = actionEl.getAttribute('data-action');
+  const step = STEP_OF[state.screen] || 1;
+
+  switch (action) {
+    case 'goHome': nav('landing'); break;
+    case 'openHelp': state.helpOpen = true; render(); break;
+    case 'closeHelp': state.helpOpen = false; render(); break;
+    case 'closeHelpBackdrop': if (t === actionEl) { state.helpOpen = false; render(); } break;
+    case 'start': nav('auto'); break;
+    case 'goStep': {
+      const n = Number(actionEl.getAttribute('data-step'));
+      const map = { 1: 'auto', 2: 'contacto', 3: 'plan', 4: 'identidad', 5: 'poliza' };
+      if (n < 6 && step > n) nav(map[n]);
+      break;
+    }
+    case 'back': {
+      const map = { help: 'auto', llamar: 'help', marcamos: 'help', llamamos: 'marcamos', contacto: 'auto', plan: 'contacto', identidad: 'plan', ine: 'identidad', datos: 'identidad', poliza: 'datos', pago: 'poliza' };
+      nav(map[state.screen] || 'auto');
+      break;
+    }
+    case 'goAuto': nav('auto'); break;
+    case 'goHelp': state.screen = 'help'; state.helpOpen = false; state.err = {}; render(); postScreenIfChanged(); break;
+    case 'goLlamar': state.screen = 'llamar'; state.helpOpen = false; render(); postScreenIfChanged(); break;
+    case 'goMarcamos': state.screen = 'marcamos'; state.helpOpen = false; render(); postScreenIfChanged(); break;
+
+    case 'submitAuto': {
+      const er = {};
+      if (state.nombre.trim().split(/\s+/).filter(Boolean).length < 2) er.nombre = 1;
+      if (state.cp.join('').length !== 5) er.cp = 1;
+      if (!state.marca) er.marca = 1;
+      if (!state.anio) er.anio = 1;
+      if (!state.version) er.version = 1;
+      state.err = er;
+      if (!Object.keys(er).length) nav('contacto'); else render();
+      break;
+    }
+    case 'solicitar': {
+      if (digits(state.telL).length !== 10) { state.err = { telL: 1 }; render(); break; }
+      state.telLDone = state.telL; state.screen = 'llamamos'; state.err = {}; render(); postScreenIfChanged();
+      break;
+    }
+    case 'toggleAcepto': state.acepto = !state.acepto; clearErr('acepto'); render(); break;
+    case 'sendOtp': {
+      const er = {};
+      if (!/.+@.+\..+/.test(state.email)) er.email = 1;
+      if (digits(state.tel).length !== 10) er.tel = 1;
+      if (!state.acepto) er.acepto = 1;
+      state.err = er;
+      if (Object.keys(er).length) { render(); break; }
+      state.sending = true; render();
+      setTimeout(() => { state.sending = false; state.otpSent = true; state.resendLeft = 30; state.otp = ['', '', '', '', '', '']; state.otpErr = false; render(); startResendTimer(); }, 1100);
+      break;
+    }
+    case 'cambiarNumero': state.otpSent = false; state.otp = ['', '', '', '', '', '']; state.otpErr = false; render(); break;
+    case 'resend': if (state.resendLeft <= 0) { state.resendLeft = 30; state.otp = ['', '', '', '', '', '']; state.otpErr = false; render(); startResendTimer(); showToast('Te enviamos un nuevo código por WhatsApp', 2600); } break;
+    case 'confirmOtp': {
+      const code = state.otp.join('');
+      if (code === '000000') { state.otpErr = true; state.otpShake = Date.now(); render(); setTimeout(() => { state.otpShake = 0; render(); }, 400); break; }
+      nav('plan');
+      break;
+    }
+
+    case 'pickPlan': state.cobertura = actionEl.getAttribute('data-k'); render(); break;
+    case 'toggleCov': ev.stopPropagation(); state.expandCov = !state.expandCov; render(); break;
+    case 'pickFreq': state.freq = actionEl.getAttribute('data-k'); render(); break;
+    case 'openCompare': state.compare = true; render(); break;
+    case 'closeCompare': state.compare = false; render(); break;
+    case 'closeCompareBackdrop': if (t === actionEl) { state.compare = false; render(); } break;
+    case 'applyPromo': state.promoLoading = true; render(); setTimeout(() => { state.promoLoading = false; state.promo = true; render(); showToast('Descuento MUNDIAL2026 aplicado', 2400); }, 900); break;
+    case 'removePromo': state.promo = false; render(); break;
+    case 'toIdentidad': nav('identidad'); break;
+
+    case 'scanIne': {
+      state.identMode = 'ine'; state.screen = 'ine'; render(); postScreenIfChanged();
+      setTimeout(() => {
+        const parts = state.nombre.trim().split(/\s+/).filter(Boolean);
+        const cpStr = state.cp.join('');
+        const loc = CPMAP[cpStr] || { c: 'Del Valle', m: 'Guanajuato' };
+        state.screen = 'datos';
+        state.d = { nombre: parts[0] || '', apellidos: parts.slice(1).join(' '), fecha: '22/11/1994', calle: 'Av. Insurgentes', colonia: loc.c, municipio: loc.m, numext: '125', numint: 'A1' };
+        render(); postScreenIfChanged();
+      }, 2600);
+      break;
+    }
+    case 'manualIne': state.identMode = 'manual'; state.screen = 'datos'; state.err = {}; render(); postScreenIfChanged(); break;
+    case 'submitDatos': {
+      const er = {}; const d = state.d;
+      ['nombre', 'apellidos', 'fecha', 'calle', 'colonia', 'municipio', 'numext'].forEach(k => { if (!String(d[k] || '').trim()) er['d' + k] = 1; });
+      if (d.fecha && !/^\d{2}\/\d{2}\/\d{4}$/.test(d.fecha)) er.dfecha = 1;
+      state.err = er;
+      if (Object.keys(er).length) { render(); break; }
+      state.rfc = state.rfc || genRfc();
+      state.screen = 'poliza'; state.err = {}; render(); postScreenIfChanged(); window.scrollTo(0, 0);
+      break;
+    }
+    case 'toggleFactura': state.factura = !state.factura; render(); break;
+    case 'submitPoliza': {
+      const er = {};
+      if (state.niv.length !== 17) er.niv = 1;
+      if (state.rfc.length !== 13) er.rfc = 1;
+      state.err = er;
+      if (!Object.keys(er).length) nav('pago'); else render();
+      break;
+    }
+    case 'pay': {
+      const er = {};
+      if (digits(state.card).length !== 16) er.card = 1;
+      if (!/^\d{2}\/\d{2}$/.test(state.exp)) er.exp = 1;
+      if (state.cvv.length !== 3) er.cvv = 1;
+      state.err = er; state.payError = false;
+      if (Object.keys(er).length) { render(); break; }
+      state.paying = true; render();
+      setTimeout(() => {
+        if (digits(state.card).slice(-1) === '1') { state.paying = false; state.payError = true; render(); return; }
+        state.paying = false; state.screen = 'listo'; render(); postScreenIfChanged(); window.scrollTo(0, 0);
+      }, 2400);
+      break;
+    }
+    case 'descargar':
+      state.toast = 'Descargando tu póliza...'; render();
+      setTimeout(() => { state.toast = 'Póliza descargada'; render(); setTimeout(() => { state.toast = ''; render(); }, 2000); }, 1400);
+      break;
+  }
+});
+
+root.addEventListener('input', ev => {
+  const t = ev.target;
+  const action = t.getAttribute('data-action');
+  if (!action) return;
+  switch (action) {
+    case 'nombreInput': state.nombre = t.value; clearErr('nombre'); render(); restoreFocus(t); break;
+    case 'marcaSelect': state.marca = t.value; clearErr('marca'); render(); setTimeout(loadVersiones, 0); break;
+    case 'anioSelect': state.anio = t.value; clearErr('anio'); render(); setTimeout(loadVersiones, 0); break;
+    case 'versionSelect': state.version = t.value; clearErr('version'); render(); break;
+    case 'cpDigit': {
+      const i = Number(t.getAttribute('data-i'));
+      const v = digits(t.value).slice(0, 1);
+      state.cp[i] = v; clearErr('cp'); render();
+      if (v && i < 4) { const n = root.querySelectorAll('.dgroup .dig')[i + 1]; if (n) n.focus(); }
+      break;
+    }
+    case 'telLInput': state.telL = digits(t.value).slice(0, 10); clearErr('telL'); render(); restoreFocus(t); break;
+    case 'emailInput': state.email = t.value; clearErr('email'); render(); restoreFocus(t); break;
+    case 'telInput': state.tel = digits(t.value).slice(0, 10); clearErr('tel'); render(); restoreFocus(t); break;
+    case 'otpDigit': {
+      const i = Number(t.getAttribute('data-i'));
+      const v = digits(t.value).slice(0, 1);
+      state.otp[i] = v; state.otpErr = false; render();
+      if (v && i < 5) { const n = root.querySelectorAll('.dgroup .dig')[i + 1]; if (n) n.focus(); }
+      break;
+    }
+    case 'dInput': { const f = t.getAttribute('data-field'); state.d[f] = t.value; clearErr('d' + f); render(); restoreFocus(t); break; }
+    case 'dFechaInput': {
+      const g = digits(t.value).slice(0, 8);
+      let out = g.slice(0, 2); if (g.length > 2) out += '/' + g.slice(2, 4); if (g.length > 4) out += '/' + g.slice(4, 8);
+      state.d.fecha = out; clearErr('dfecha'); render(); restoreFocus(t);
+      break;
+    }
+    case 'nivInput': state.niv = t.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 17); clearErr('niv'); render(); restoreFocus(t); break;
+    case 'rfcInput': state.rfc = t.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 13); clearErr('rfc'); render(); restoreFocus(t); break;
+    case 'cardInput': { const g = digits(t.value).slice(0, 16); state.card = g.replace(/(.{4})/g, '$1 ').trim(); clearErr('card'); render(); restoreFocus(t); break; }
+    case 'expInput': { const g = digits(t.value).slice(0, 4); state.exp = g.length > 2 ? g.slice(0, 2) + '/' + g.slice(2) : g; clearErr('exp'); render(); restoreFocus(t); break; }
+    case 'cvvInput': state.cvv = digits(t.value).slice(0, 3); clearErr('cvv'); render(); restoreFocus(t); break;
+  }
+});
+
+root.addEventListener('change', ev => {
+  const t = ev.target;
+  if (t.getAttribute('data-action') === 'freqSelect') { state.freq = t.value; render(); }
+});
+
+root.addEventListener('keydown', ev => {
+  const t = ev.target;
+  if (!(t.classList && t.classList.contains('dig'))) return;
+  if (ev.key === 'Backspace' && !t.value) {
+    const list = Array.prototype.slice.call(root.querySelectorAll('.dgroup .dig'));
+    const i = list.indexOf(t);
+    if (i > 0) list[i - 1].focus();
+  }
+});
+
+// Restaura foco + posición del cursor tras un re-render disparado por un input de texto.
+function restoreFocus(originalEl) {
+  const action = originalEl.getAttribute('data-action');
+  const field = originalEl.getAttribute('data-field');
+  requestAnimationFrame(() => {
+    let sel = '[data-action="' + action + '"]' + (field ? '[data-field="' + field + '"]' : '');
+    const target = root.querySelector(sel);
+    if (target) { target.focus(); const len = target.value.length; try { target.setSelectionRange(len, len); } catch (e) {} }
+  });
+}
+
+function startResendTimer() {
+  if (resendTimer) clearInterval(resendTimer);
+  resendTimer = setInterval(() => {
+    if (state.otpSent && state.resendLeft > 0) { state.resendLeft--; render(); }
+    else { clearInterval(resendTimer); }
+  }, 1000);
+}
+
+render();
+</script>
+</body>
+</html>

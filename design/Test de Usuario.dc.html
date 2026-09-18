@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;family=Inter:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#EAEAEA;font-family:Nunito,sans-serif;color:#333;-webkit-font-smoothing:antialiased}
+a{color:#1F8A3B;text-decoration:none}
+a:hover{color:#0F7B33;text-decoration:underline}
+input,select,button,textarea{font-family:inherit}
+textarea::placeholder{color:#ADADAD}
+.btn{transition:filter .16s ease,transform .1s ease;cursor:pointer;border:none}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:scale(.985)}
+.btn[disabled]{background:#C3E1A2!important;color:#fff!important;cursor:not-allowed;filter:none}
+.opt{cursor:pointer;background:#fff;border:1.5px solid #DADADA;color:#4A4A4A;transition:border-color .15s ease,background .15s ease,color .15s ease}
+.opt:hover{border-color:#76B82A}
+.opt[data-sel="true"]{border-color:#76B82A;background:#F1F8E7;color:#0F7B33;font-weight:800}
+.ta{width:100%;border:1.5px solid #DADADA;border-radius:10px;padding:12px;font-size:15px;color:#333;resize:vertical;outline:none;background:#fff}
+.ta:focus{border-color:#76B82A}
+.stage[data-on="false"]{display:none!important}
+.paper[data-on="false"]{display:none!important}
+.qwrap[data-mode="off"]{display:none!important}
+.qwrap[data-mode="sheet"]{position:fixed;left:0;right:0;top:0;bottom:0;z-index:60;background:#EAEAEA;overflow-y:auto;padding:66px 20px 130px;animation:sheetin .22s ease}
+.qwrap[data-mode="sheet"] .qinner{max-width:620px;margin:0 auto}
+@keyframes sheetin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.root[data-task="false"]{height:auto!important;min-height:100dvh;overflow:visible!important}
+.root[data-task="false"] .paper{overflow:visible!important;min-height:0!important;flex:none!important}
+.root[data-task="false"] .qwrap[data-mode="flow"]{padding:0 20px 24px;max-width:660px;margin:0 auto;width:100%}
+@media(max-width:620px){.pad{padding:18px 14px 20px!important}}
+</style>
+</helmet>
+
+<div class="root" data-task="{{ stageOn }}" style="height:100dvh;background:#EAEAEA;display:flex;flex-direction:column;overflow:hidden">
+
+  <header style="background:#F7F7F7;border-bottom:1px solid #E3E3E3;padding:10px 16px;display:flex;align-items:center;gap:12px;flex:none;z-index:70;position:sticky;top:0">
+    <img src="./logohdi-mtrlq3ob-v9hx.png" alt="HDI Seguros" style="height:26px;width:auto;display:block;flex:none">
+    <div style="flex:1;min-width:0">
+      <div style="height:6px;border-radius:3px;background:#DEDEDE;overflow:hidden">
+        <div style="height:100%;background:#76B82A;border-radius:3px;transition:width .3s ease;width:{{ pct }}"></div>
+      </div>
+    </div>
+    <div style="font-size:12px;font-weight:700;color:#5A5A5A;flex:none">{{ counter }}</div>
+  </header>
+
+  <div class="stage" data-on="{{ stageOn }}" style="flex:1;min-height:0;display:flex;flex-direction:column;background:#fff;position:relative">
+    <div style="background:#0F7B33;padding:12px 16px;flex:none">
+      <div style="max-width:620px;margin:0 auto">
+        <div style="font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#BEE3A8">{{ taskKicker }}</div>
+        <div style="font-family:Inter,sans-serif;font-weight:700;font-size:17px;line-height:1.25;color:#fff;margin-top:3px;text-wrap:pretty">{{ taskTitle }}</div>
+        <div style="font-size:13px;line-height:1.4;color:#DCEFD0;margin-top:4px">{{ taskHint }}</div>
+      </div>
+    </div>
+    <iframe src="./Cotizador%20Auto.dc.html" title="Cotizador de auto" style="flex:1;width:100%;border:none;display:block;background:#EAEAEA"></iframe>
+  </div>
+
+  <main class="paper pad" data-on="{{ paperOn }}" style="flex:1;min-height:0;overflow-y:auto;width:100%;padding:26px 20px 30px">
+   <div style="max-width:620px;margin:0 auto">
+
+    <sc-if value="{{ isIntro }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <h1 style="font-family:Inter,sans-serif;font-weight:800;font-size:31px;line-height:1.08;letter-spacing:-.02em;margin:0;color:#333;text-wrap:pretty">Ayúdanos a mejorar el cotizador de auto</h1>
+        <p style="font-size:16px;line-height:1.5;color:#4A4A4A;margin:14px 0 0">Vas a usar una versión de prueba y a contarnos cómo te fue. No es un examen: evaluamos la herramienta, no a ti.</p>
+        <div style="background:#fff;border-radius:14px;padding:18px;margin-top:20px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="width:26px;height:26px;border-radius:13px;background:#F1F8E7;color:#0F7B33;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none">1</span><div style="font-size:15px;line-height:1.45;color:#4A4A4A">Son <strong>3 tareas</strong>, una a la vez. La instrucción se queda arriba mientras usas el cotizador aquí mismo.</div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="width:26px;height:26px;border-radius:13px;background:#F1F8E7;color:#0F7B33;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none">2</span><div style="font-size:15px;line-height:1.45;color:#4A4A4A">Al terminar cada tarea tocas el botón verde y respondes unas preguntas cortas.</div></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="width:26px;height:26px;border-radius:13px;background:#F1F8E7;color:#0F7B33;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none">3</span><div style="font-size:15px;line-height:1.45;color:#4A4A4A">Toma unos <strong>15 minutos</strong>. Si algo no se puede hacer, dilo: eso también nos sirve.</div></div>
+        </div>
+        <div style="background:#FFF8E6;border-radius:12px;padding:14px;margin-top:14px;font-size:14px;line-height:1.45;color:#6B5B25">Es una simulación. <strong>No uses datos reales</strong> de tarjeta ni documentos personales.</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isFinal }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#0F7B33">Últimas preguntas</div>
+        <h2 style="font-family:Inter,sans-serif;font-weight:700;font-size:25px;line-height:1.18;margin:8px 0 0;color:#333">Tu impresión general</h2>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="width:60px;height:60px;border-radius:30px;background:#F1F8E7;display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#76B82A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <h2 style="font-family:Inter,sans-serif;font-weight:800;font-size:29px;line-height:1.1;margin:0;color:#333">Terminaste, gracias</h2>
+        <p style="font-size:16px;line-height:1.5;color:#4A4A4A;margin:12px 0 0">Falta un paso y es el importante: <strong>tus respuestas todavía no nos llegan</strong>. Toca el botón, se copian solas, y pégalas en el mismo chat donde te compartimos este link.</p>
+        <button onClick="{{ copyAll }}" class="btn" style="width:100%;height:54px;border-radius:27px;background:#76B82A;color:#fff;font-weight:800;font-size:17px;margin-top:18px">{{ copyLabel }}</button>
+        <div style="font-size:13px;color:#5A5A5A;margin-top:10px;text-align:center">{{ copyNote }}</div>
+        <div style="font-size:13px;font-weight:700;color:#5A5A5A;margin-top:22px">Esto es lo que se copia:</div>
+        <textarea class="ta" rows="12" readonly="" style="margin-top:8px;font-size:13px;line-height:1.5" value="{{ summary }}" onChange="{{ noop }}"></textarea>
+        <button onClick="{{ reset }}" class="btn" style="background:none;color:#7A7A7A;font-size:14px;text-decoration:underline;margin-top:14px;padding:0">Borrar y empezar de nuevo</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ paperQs }}" hint-placeholder-val="{{ true }}">
+      <div style="margin-top:22px"></div>
+    </sc-if>
+
+   </div>
+  </main>
+
+  <div class="qwrap" data-mode="{{ qmode }}">
+   <div class="qinner">
+    <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-bottom:16px">
+        <button onClick="{{ closeSheet }}" class="btn" style="display:flex;align-items:center;gap:6px;background:none;color:#0F7B33;font-weight:700;font-size:14px;padding:0;margin-bottom:14px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0F7B33" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Volver a la tarea
+        </button>
+        <div style="font-size:13px;color:#5A5A5A;margin-bottom:10px">{{ autoNote }}</div>
+        <div style="font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#0F7B33">{{ taskKicker }}</div>
+        <h2 style="font-family:Inter,sans-serif;font-weight:700;font-size:23px;line-height:1.18;margin:6px 0 0;color:#333;text-wrap:pretty">{{ sheetTitle }}</h2>
+        <div style="font-size:14px;line-height:1.45;color:#4A4A4A;margin-top:8px">{{ stuckNote }}</div>
+      </div>
+    </sc-if>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <sc-for list="{{ questions }}" as="q" hint-placeholder-count="3">
+        <div style="background:#fff;border-radius:14px;padding:18px">
+          <div style="font-size:16px;font-weight:700;line-height:1.35;color:#333;text-wrap:pretty">{{ q.label }}</div>
+          <div style="font-size:13px;color:#5A5A5A;margin-top:4px">{{ q.hint }}</div>
+          <sc-if value="{{ q.isChoice }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">
+              <sc-for list="{{ q.opts }}" as="o" hint-placeholder-count="3">
+                <button class="opt btn" data-sel="{{ o.sel }}" onClick="{{ o.on }}" style="min-height:46px;padding:10px 16px;border-radius:23px;font-size:15px">{{ o.label }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ q.isText }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:14px">
+              <textarea class="ta" rows="3" placeholder="{{ q.ph }}" value="{{ q.value }}" onChange="{{ q.onText }}"></textarea>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+   </div>
+  </div>
+
+  <sc-if value="{{ showTaskBar }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#F7F7F7;border-top:1px solid #E3E3E3;padding:12px 16px;flex:none;z-index:50">
+      <div style="max-width:620px;margin:0 auto;display:flex;align-items:center;gap:10px">
+        <button onClick="{{ openSheet }}" disabled="{{ taskBlocked }}" class="btn" style="flex:1;height:52px;border-radius:26px;background:#76B82A;color:#fff;font-weight:800;font-size:16px">Ya terminé esta tarea</button>
+        <button onClick="{{ openStuck }}" class="btn" style="height:52px;padding:0 18px;border-radius:26px;background:#fff;color:#5A5A5A;font-weight:700;font-size:15px;border:1.5px solid #DADADA">Me atoré</button>
+      </div>
+      <div style="max-width:620px;margin:8px auto 0;display:flex;align-items:flex-start;gap:7px;justify-content:center;text-align:center">
+        <sc-if value="{{ taskBlocked }}" hint-placeholder-val="{{ true }}">
+          <div style="font-size:12.5px;line-height:1.4;color:#5A5A5A">Para continuar: <strong>{{ taskNeed }}</strong></div>
+        </sc-if>
+        <div style="font-size:12.5px;line-height:1.4;color:#0F7B33;font-weight:700">{{ doneHint }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+    <div style="background:#F7F7F7;border-top:1px solid #E3E3E3;padding:12px 16px;flex:none;z-index:70;position:{{ navPos }};left:0;right:0;bottom:0">
+      <div style="max-width:620px;margin:0 auto;display:flex;align-items:center;gap:12px">
+        <sc-if value="{{ canBack }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ back }}" class="btn" style="height:50px;padding:0 20px;border-radius:25px;background:#fff;color:#5A5A5A;font-weight:700;font-size:15px;border:1.5px solid #DADADA">Atrás</button>
+        </sc-if>
+        <button onClick="{{ next }}" disabled="{{ nextDisabled }}" class="btn" style="flex:1;height:50px;border-radius:25px;background:#76B82A;color:#fff;font-weight:800;font-size:16px">{{ nextLabel }}</button>
+      </div>
+      <div style="max-width:620px;margin:6px auto 0;text-align:center;font-size:12px;color:#5A5A5A">{{ navNote }}</div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:420,&quot;height&quot;:900}}">
+const KEY = 'ux_test_cotizador_v2';
+
+const TASKS = [
+  {
+    kicker: 'Tarea 1 de 3',
+    title: 'Cotiza un auto, revisa la protección y quédate con un paquete.',
+    hint: 'Usa el auto que quieras (si no se te ocurre uno: Nissan Versa 2020, CP 06700). Tómate tu tiempo para ver los precios y, si quieres, cambia la suma asegurada, un deducible o alguna cobertura antes de elegir.',
+    qs: [
+      { id: 'logro', type: 'choice', label: '¿Pudiste llegar a ver precios y elegir un paquete?', opts: ['Sí, sin problema', 'Sí, pero me costó', 'No lo logré'] },
+      { id: 'dif', type: 'scale', label: '¿Qué tan fácil o difícil te resultó?', hint: '1 = muy fácil · 5 = muy difícil' },
+      { id: 'esperado', type: 'text', label: '¿Te pidieron algún dato que no esperabas o que no sabrías de memoria?', ph: 'Escribe lo que recuerdes', optional: true },
+      { id: 'compr', type: 'text', label: 'Con tus palabras: ¿en qué se diferencian los paquetes que viste?', ph: 'Responde como se lo explicarías a un amigo' },
+      { id: 'deducible', type: 'text', label: '¿Los datos que viste son suficientes para hacerte elegir un paquete? ', ph: 'No hay respuesta correcta, dinos qué entendiste' },
+      { id: 'precio', type: 'choice', label: '¿Te quedó claro cómo cambiaba el precio según lo que elegías?', opts: ['Sí', 'Más o menos', 'No'] },
+      { id: 'porque', type: 'text', label: '¿Por qué elegiste ese paquete?', ph: 'Opcional', optional: true },
+      { id: 'notas', type: 'text', label: '¿Algo te confundió o te detuvo?', ph: 'Opcional', optional: true }
+    ]
+  },
+  {
+    kicker: 'Tarea 2 de 3',
+    title: 'Llena tus datos.',
+    hint: 'Usa datos inventados. Solo queremos ver si el formulario se deja llenar.',
+    qs: [
+      { id: 'logro', type: 'choice', label: '¿Pudiste completar tus datos?', opts: ['Sí, sin problema', 'Sí, pero me costó', 'No lo logré'] },
+      { id: 'dif', type: 'scale', label: '¿Qué tan fácil o difícil te resultó?', hint: '1 = muy fácil · 5 = muy difícil' },
+      { id: 'campos', type: 'text', label: '¿Hubo algún campo que no entendiste o que te haría abandonar?', ph: 'Opcional', optional: true }
+    ]
+  },
+  {
+    kicker: 'Tarea 3 de 3',
+    title: 'Llega hasta el pago y confirma la contratación.',
+    hint: 'Es una simulación: usa los datos de tarjeta de prueba que aparecen, nunca los tuyos.',
+    qs: [
+      { id: 'logro', type: 'choice', label: '¿Pudiste terminar la contratación?', opts: ['Sí, sin problema', 'Sí, pero me costó', 'No lo logré'] },
+      { id: 'dif', type: 'scale', label: '¿Qué tan fácil o difícil te resultó?', hint: '1 = muy fácil · 5 = muy difícil' },
+      { id: 'despues', type: 'text', label: '¿Qué crees que pasa después de pagar? ¿Qué recibes y cuándo?', ph: 'Lo que entendiste de las pantallas' },
+      { id: 'confianza', type: 'choice', label: 'En la vida real, ¿habrías pagado aquí?', opts: ['Sí', 'Lo dudaría', 'No'] }
+    ]
+  }
+];
+
+const INTRO_QS = [
+  { id: 'nombre', type: 'text', label: '¿Cómo te llamas?', ph: 'Nombre o apodo, para identificar tus respuestas' },
+  { id: 'device', type: 'choice', label: '¿Desde dónde estás probando?', opts: ['Celular', 'Computadora', 'Tablet'] },
+  { id: 'exp', type: 'choice', label: '¿Has cotizado o contratado un seguro de auto por internet antes?', opts: ['Sí', 'No', 'Solo cotizado'] }
+];
+
+const FINAL_QS = [
+  { id: 'f_paso', type: 'scale', label: 'Supe en todo momento en qué paso estaba y cuánto faltaba.', hint: '1 = nada de acuerdo · 5 = totalmente de acuerdo' },
+  { id: 'f_leng', type: 'scale', label: 'El lenguaje de las coberturas y los seguros fue claro.', hint: '1 = nada de acuerdo · 5 = totalmente de acuerdo' },
+  { id: 'f_solo', type: 'scale', label: 'Podría repetir todo el proceso solo, sin ayuda.', hint: '1 = nada de acuerdo · 5 = totalmente de acuerdo' },
+  { id: 'f_conf', type: 'scale', label: 'Me sentí en confianza dando mis datos.', hint: '1 = nada de acuerdo · 5 = totalmente de acuerdo' },
+  { id: 'f_peor', type: 'text', label: '¿Cuál fue el peor momento de todo el proceso?', ph: 'El punto donde más te trabaste' },
+  { id: 'f_falto', type: 'text', label: '¿Algo que esperabas encontrar y no estaba?', ph: 'Opcional', optional: true },
+  { id: 'f_libre', type: 'text', label: '¿Algo más que nos quieras decir?', ph: 'Opcional', optional: true }
+];
+
+const SCALE = ['1', '2', '3', '4', '5'];
+
+// Avance real dentro del prototipo, leído del atributo data-screen del iframe
+const RANK = { landing: 0, auto: 1, help: 1, llamar: 1, marcamos: 1, llamamos: 1, contacto: 2, plan: 3, identidad: 4, ine: 4, datos: 5, poliza: 6, pago: 7, listo: 8 };
+// Pantalla mínima que hay que alcanzar para dar por terminada cada tarea
+const NEED = [4, 6, 8];
+const NEED_TXT = [
+  'Elige tu paquete y continúa al siguiente paso.',
+  'Completa tus datos y llega a la pantalla de tu póliza.',
+  'Termina el pago y llega a la pantalla de confirmación.'
+];
+
+class Component extends DCLogic {
+  state = { i: 0, ans: {}, copied: false, sheet: false, rank: 0, blind: false, stuck: false, fired: -1, taskOf: -1, baseRank: 0, baseSig: '', ready: -1 };
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) { const d = JSON.parse(raw); this.setState({ i: d.i || 0, ans: d.ans || {} }); }
+    } catch (e) {}
+    this.poll = setInterval(() => {
+      try {
+        const fr = document.querySelector('iframe[title="Cotizador de auto"]');
+        const doc = fr && fr.contentDocument;
+        if (!doc) return;
+        const el = doc.querySelector('[data-screen]');
+        if (!el) return;
+        const r = RANK[el.getAttribute('data-screen')];
+        const sig = el.getAttribute('data-sig') || '';
+        if (typeof r !== 'number') return;
+        const i = this.state.i;
+        const onTask = i >= 1 && i <= TASKS.length;
+        // al entrar a una tarea, se guarda el punto de partida real del prototipo
+        if (this.state.taskOf !== i) { this.setState({ taskOf: i, baseRank: r, baseSig: sig, rank: r }); return; }
+        if (r > this.state.rank) this.setState({ rank: r });
+        if (!onTask) return;
+        const need = NEED[i - 1];
+        const ok = need === null ? (sig !== this.state.baseSig) : (r >= need && r > this.state.baseRank);
+        if (ok && !this.state.sheet && this.state.fired !== i) this.setState({ sheet: true, stuck: false, fired: i, ready: i });
+        else if (ok && this.state.ready !== i) this.setState({ ready: i });
+      } catch (e) { if (!this.state.blind) this.setState({ blind: true }); }
+    }, 700);
+  }
+  componentWillUnmount() { clearInterval(this.poll); }
+
+  save(patch) {
+    this.setState(patch, () => {
+      try { localStorage.setItem(KEY, JSON.stringify({ i: this.state.i, ans: this.state.ans })); } catch (e) {}
+    });
+  }
+
+  screenQs() {
+    const i = this.state.i;
+    if (i === 0) return { ns: 'intro', qs: INTRO_QS };
+    if (i >= 1 && i <= TASKS.length) return { ns: 't' + i, qs: TASKS[i - 1].qs };
+    if (i === TASKS.length + 1) return { ns: 'fin', qs: FINAL_QS };
+    return { ns: '', qs: [] };
+  }
+
+  set(key, val) { this.save({ ans: Object.assign({}, this.state.ans, { [key]: val }), copied: false }); }
+
+  buildSummary() {
+    const a = this.state.ans;
+    const L = [];
+    L.push('TEST DE USABILIDAD — COTIZADOR AUTO');
+    L.push('Participante: ' + (a['intro.nombre'] || '(sin nombre)'));
+    L.push('Dispositivo: ' + (a['intro.device'] || '-') + ' · Experiencia previa: ' + (a['intro.exp'] || '-'));
+    L.push('Fecha: ' + new Date().toLocaleString('es-MX'));
+    L.push('');
+    TASKS.forEach((t, n) => {
+      L.push('— ' + t.kicker.toUpperCase() + ': ' + t.title);
+      t.qs.forEach(q => {
+        const v = a['t' + (n + 1) + '.' + q.id];
+        L.push('  ' + q.label + ' → ' + (v ? v : '(sin respuesta)'));
+      });
+      L.push('');
+    });
+    L.push('— IMPRESIÓN GENERAL');
+    FINAL_QS.forEach(q => { L.push('  ' + q.label + ' → ' + (a['fin.' + q.id] || '(sin respuesta)')); });
+    return L.join('\n');
+  }
+
+  renderVals() {
+    const i = this.state.i, a = this.state.ans;
+    const total = TASKS.length + 2;
+    const { ns, qs } = this.screenQs();
+    const isTask = i >= 1 && i <= TASKS.length;
+    const isDone = i === TASKS.length + 2;
+    const isIntro = i === 0;
+    const isFinal = i === TASKS.length + 1;
+    const sheetOpen = isTask && this.state.sheet;
+
+    const questions = (isTask && !sheetOpen) ? [] : qs.map(q => {
+      const key = ns + '.' + q.id;
+      const isScale = q.type === 'scale';
+      const opts = (isScale ? SCALE : (q.opts || [])).map(label => ({
+        label,
+        sel: a[key] === label ? 'true' : 'false',
+        on: () => this.set(key, label)
+      }));
+      return {
+        label: q.label, hint: q.hint || '',
+        isChoice: q.type === 'choice' || isScale,
+        isText: q.type === 'text',
+        ph: q.ph || '', value: a[key] || '', opts,
+        onText: e => this.set(key, e.target.value)
+      };
+    });
+
+    const missing = questions.length > 0 && qs.some(q => !q.optional && !(a[ns + '.' + q.id] || '').trim());
+    const summary = isDone ? this.buildSummary() : '';
+
+    return {
+      pct: Math.round((i / total) * 100) + '%',
+      counter: isDone ? 'Fin' : (i + 1) + '/' + total,
+      isIntro, isFinal, isDone,
+      stageOn: isTask ? 'true' : 'false',
+      paperOn: isTask ? 'false' : 'true',
+      qmode: sheetOpen ? 'sheet' : (isTask ? 'off' : 'flow'),
+      sheetOpen,
+      paperQs: !isTask,
+      questions,
+      taskKicker: isTask ? TASKS[i - 1].kicker : '',
+      taskTitle: isTask ? TASKS[i - 1].title : '',
+      taskHint: isTask ? TASKS[i - 1].hint : '',
+      showTaskBar: isTask && !sheetOpen,
+      taskReady: isTask && (this.state.blind || this.state.ready === i),
+      taskBlocked: isTask && !(this.state.blind || this.state.ready === i),
+      taskNeed: isTask ? NEED_TXT[i - 1] : '',
+      doneHint: isTask && (this.state.blind || this.state.ready === i) ? 'Tarea lograda. Responde unas preguntas y sigues.' : '',
+      showNav: !isDone && !(isTask && !sheetOpen),
+      navPos: sheetOpen ? 'fixed' : 'static',
+      canBack: i > 0 && !sheetOpen,
+      nextDisabled: missing,
+      nextLabel: isIntro ? 'Empezar' : (isFinal ? 'Terminar' : 'Guardar y continuar'),
+      navNote: missing ? 'Responde las preguntas para continuar' : '',
+      next: () => {
+        if (sheetOpen) this.save({ i: Math.min(i + 1, total), sheet: false });
+        else this.save({ i: Math.min(i + 1, total) });
+      },
+      back: () => this.save({ i: Math.max(i - 1, 0), sheet: false }),
+      openSheet: () => this.setState({ sheet: true, stuck: false }),
+      openStuck: () => this.setState({ sheet: true, stuck: true }),
+      closeSheet: () => this.setState({ sheet: false, stuck: false }),
+      sheetTitle: this.state.stuck ? '¿Dónde te atoraste?' : '¿Cómo te fue con esta tarea?',
+      autoNote: (sheetOpen && !this.state.stuck && this.state.fired === i) ? 'Llegaste a donde pedía la tarea. Responde y sigues con la siguiente.' : '',
+      stuckNote: this.state.stuck ? 'No pasa nada: cuéntanos qué intentaste y dónde se trabó. Al guardar pasas a la siguiente tarea.' : '',
+      summary,
+      copyLabel: this.state.copied ? '¡Copiado! Ya puedes pegarlas' : 'Copiar mis respuestas',
+      copyNote: this.state.copied ? 'Pégalas en el chat donde te compartimos este link.' : 'Si el botón no funciona, selecciona el texto de abajo y cópialo a mano.',
+      copyAll: () => {
+        const txt = this.buildSummary();
+        if (navigator.clipboard) navigator.clipboard.writeText(txt);
+        this.setState({ copied: true });
+        setTimeout(() => this.setState({ copied: false }), 4000);
+      },
+      noop: () => {},
+      reset: () => { try { localStorage.removeItem(KEY); } catch (e) {} this.setState({ i: 0, ans: {}, copied: false, sheet: false }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
