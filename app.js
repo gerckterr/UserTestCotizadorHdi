@@ -549,7 +549,14 @@ el.qwrap.addEventListener('click', ev => {
 });
 el.qwrap.addEventListener('input', ev => {
   if (ev.target.tagName === 'TEXTAREA' && ev.target.dataset.key) {
-    setAnswer(ev.target.dataset.key, ev.target.value);
+    const key = ev.target.dataset.key;
+    setAnswer(key, ev.target.value);
+    // setAnswer -> render() reconstruye el <textarea>, así que se pierde el
+    // foco a media escritura. Lo recuperamos en el siguiente frame.
+    requestAnimationFrame(() => {
+      const t = el.qList.querySelector('textarea[data-key="' + key.replace(/"/g, '\\"') + '"]');
+      if (t) { t.focus(); const len = t.value.length; try { t.setSelectionRange(len, len); } catch (e) {} }
+    });
   }
 });
 

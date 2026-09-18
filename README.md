@@ -107,6 +107,33 @@ Cualquiera de estas tres sirve — son solo la carpeta completa, sin build:
 Para cualquiera de las tres, sube la carpeta completa (no hace falta
 `design/` ni `google-apps-script/`, pero no estorban si se quedan).
 
+## 5. Invitar participantes
+
+Cuando ya tengas el link publicado, puedes mandar algo así por WhatsApp o
+correo a cada persona:
+
+> Hola! Te quiero pedir un favor: probar un cotizador de seguro de auto que
+> estamos evaluando. Son 3 tareas cortas, toma unos 15 minutos, y no es un
+> examen — evaluamos la herramienta, no a ti.
+>
+> Ábrelo de preferencia desde tu celular: [LINK]
+>
+> Es una simulación: no uses datos reales de tarjeta ni documentos
+> personales.
+>
+> ¡Gracias!
+
+Un par de cosas a tener en cuenta:
+
+- Cada quien que abre el link genera su propia sesión sola (`session_id`),
+  así que puedes mandarlo a varias personas a la vez sin coordinarte con
+  nadie.
+- Si alguien cierra la pestaña a la mitad, no pasa nada: sus respuestas
+  hasta ese punto ya quedaron guardadas en la Sheet.
+- Si alguien recarga la página a la mitad del test, retoma donde se quedó
+  (queda guardado en su navegador); si quiere empezar de cero, el botón
+  "Borrar y empezar de nuevo" en la pantalla final se lo permite.
+
 ## Flujo del test (resumen)
 
 Intro → Tarea 1 (cotizar y elegir paquete) → encuesta → Tarea 2 (llenar
