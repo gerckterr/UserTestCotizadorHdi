@@ -2,7 +2,7 @@
 > estamos evaluando. Son 3 tareas cortas, toma unos 15 minutos, y no es un
 > examen — evaluamos la herramienta, no a ti.
 >
-> Ábrelo de preferencia desde tu celular: [LINK]
+> Ábrelo de preferencia desde tu celular: https://gerckterr.github.io/UserTestCotizadorHdi/
 >
 > Es una simulación: no uses datos reales de tarjeta ni documentos
 > personales.
