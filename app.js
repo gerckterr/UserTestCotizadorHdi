@@ -25,7 +25,7 @@ const TASKS = [
     hint: 'Usa el auto que quieras (si no se te ocurre uno: Nissan Versa 2020, CP 06700). Tómate tu tiempo para ver los precios y, si quieres, cambia la suma asegurada, un deducible o alguna cobertura antes de elegir.',
     qs: [
       { id: 'logro', type: 'choice', label: '¿Pudiste llegar a ver precios y elegir un paquete?', opts: ['Sí, sin problema', 'Sí, pero me costó', 'No lo logré'] },
-      { id: 'dif', type: 'scale', label: '¿Qué tan fácil o difícil te resultó?', hint: '1 = muy fácil · 5 = muy difícil' },
+      { id: 'dif', type: 'scale', label: '¿Qué tan fácil o difícil te resultó?', hint: '1 = muy difícil · 5 = muy fácil' },
       { id: 'esperado', type: 'text', label: '¿Te pidieron algún dato que no esperabas o que no sabrías de memoria?', ph: 'Escribe lo que recuerdes', optional: true },
       { id: 'compr', type: 'text', label: 'Con tus palabras: ¿en qué se diferencian los paquetes que viste?', ph: 'Responde como se lo explicarías a un amigo' },
       { id: 'deducible', type: 'text', label: '¿Los datos que viste son suficientes para hacerte elegir un paquete? ', ph: 'No hay respuesta correcta, dinos qué entendiste' },
@@ -40,7 +40,7 @@ const TASKS = [
     hint: 'Usa datos inventados. Solo queremos ver si el formulario se deja llenar.',
     qs: [
       { id: 'logro', type: 'choice', label: '¿Pudiste completar tus datos?', opts: ['Sí, sin problema', 'Sí, pero me costó', 'No lo logré'] },
-      { id: 'dif', type: 'scale', label: '¿Qué tan fácil o difícil te resultó?', hint: '1 = muy fácil · 5 = muy difícil' },
+      { id: 'dif', type: 'scale', label: '¿Qué tan fácil o difícil te resultó?', hint: '1 = muy difícil · 5 = muy fácil' },
       { id: 'campos', type: 'text', label: '¿Hubo algún campo que no entendiste o que te haría abandonar?', ph: 'Opcional', optional: true }
     ]
   },
@@ -50,7 +50,7 @@ const TASKS = [
     hint: 'Es una simulación: usa los datos de tarjeta de prueba que aparecen, nunca los tuyos.',
     qs: [
       { id: 'logro', type: 'choice', label: '¿Pudiste terminar la contratación?', opts: ['Sí, sin problema', 'Sí, pero me costó', 'No lo logré'] },
-      { id: 'dif', type: 'scale', label: '¿Qué tan fácil o difícil te resultó?', hint: '1 = muy fácil · 5 = muy difícil' },
+      { id: 'dif', type: 'scale', label: '¿Qué tan fácil o difícil te resultó?', hint: '1 = muy difícil · 5 = muy fácil' },
       { id: 'despues', type: 'text', label: '¿Qué crees que pasa después de pagar? ¿Qué recibes y cuándo?', ph: 'Lo que entendiste de las pantallas' },
       { id: 'confianza', type: 'choice', label: 'En la vida real, ¿habrías pagado aquí?', opts: ['Sí', 'Lo dudaría', 'No'] }
     ]
@@ -74,6 +74,21 @@ const FINAL_QS = [
 ];
 
 const SCALE = ['1', '2', '3', '4', '5'];
+
+// Pregunta obligatoria que se antepone a la encuesta de una tarea cuando la
+// persona tocó "Me atoré", para saber qué la detuvo.
+const ATORO_OTRO = 'Otro';
+const MOTIVO_ATORO_Q = {
+  id: 'atoro_motivo', type: 'choice_other', label: '¿Qué te detuvo?',
+  opts: [
+    'No me llegó el código de verificación',
+    'No sabía qué dato poner o no lo tenía a la mano',
+    'No encontré mi auto en la lista',
+    'No entendí qué tenía que hacer',
+    'No quise dar esa información',
+    ATORO_OTRO
+  ]
+};
 
 // Ranking de pantallas del cotizador (viene de cotizador.html vía postMessage,
 // con polling del atributo data-screen como respaldo).
@@ -165,6 +180,13 @@ function buildPayload() {
     payload['t' + n + '_duracion_seg'] = state.taskDuration[n] != null ? state.taskDuration[n] : '';
   });
   FINAL_QS.forEach(q => { payload['fin_' + q.id] = a['fin.' + q.id] || ''; });
+  // Columnas agregadas después del lanzamiento inicial: se guardan al final
+  // a propósito, para no reordenar ni renombrar las columnas que ya existen
+  // en la Sheet (Code.gs agrega columnas nuevas siempre al final).
+  for (let n = 1; n <= TASKS.length; n++) {
+    payload['t' + n + '_atoro_motivo'] = a['t' + n + '.' + MOTIVO_ATORO_Q.id] || '';
+  }
+  payload.version_escala = 2;
   return payload;
 }
 
@@ -294,7 +316,10 @@ setInterval(() => {
 function screenQs() {
   const i = state.i;
   if (i === 0) return { ns: 'intro', qs: INTRO_QS };
-  if (i >= 1 && i <= TASKS.length) return { ns: 't' + i, qs: TASKS[i - 1].qs };
+  if (i >= 1 && i <= TASKS.length) {
+    const qs = state.stuck ? [MOTIVO_ATORO_Q].concat(TASKS[i - 1].qs) : TASKS[i - 1].qs;
+    return { ns: 't' + i, qs };
+  }
   if (i === TASKS.length + 1) return { ns: 'fin', qs: FINAL_QS };
   return { ns: '', qs: [] };
 }
@@ -401,6 +426,18 @@ function renderQuestions(qs, ns, container) {
       }).join('') + '</div>';
     } else if (q.type === 'text') {
       body = '<div class="q-text"><textarea class="ta" rows="3" placeholder="' + esc(q.ph || '') + '" data-key="' + esc(key) + '">' + esc(val) + '</textarea></div>';
+    } else if (q.type === 'choice_other') {
+      // Como "Otro" requiere texto libre antes de contar como respondida, se
+      // guarda por separado qué opción está seleccionada (key + '__sel') del
+      // valor final que se manda a la Sheet (key), que queda vacío mientras
+      // "Otro" no tenga texto.
+      const sel = state.ans[key + '__sel'] || '';
+      const otroVal = state.ans[key + '__otro'] || '';
+      body = '<div class="q-opts">' + q.opts.map(label => {
+        const isSel = sel === label ? 'true' : 'false';
+        return '<button type="button" class="opt btn" data-sel="' + isSel + '" data-choice-other-key="' + esc(key) + '" data-value="' + esc(label) + '">' + esc(label) + '</button>';
+      }).join('') + '</div>' +
+      (sel === ATORO_OTRO ? '<div class="q-text"><textarea class="ta" rows="2" placeholder="Cuéntanos qué pasó" data-otro-key="' + esc(key) + '">' + esc(otroVal) + '</textarea></div>' : '');
     }
     return '<div class="q-card">' +
       '<div class="q-label">' + esc(q.label) + '</div>' +
@@ -601,6 +638,21 @@ el.qwrap.addEventListener('click', ev => {
         b.setAttribute('data-sel', b.getAttribute('data-value') === value ? 'true' : 'false');
       });
     }
+    return;
+  }
+  const coBtn = ev.target.closest('button[data-choice-other-key]');
+  if (coBtn) {
+    const key = coBtn.getAttribute('data-choice-other-key');
+    const value = coBtn.getAttribute('data-value');
+    state.ans[key + '__sel'] = value;
+    state.ans[key] = value === ATORO_OTRO
+      ? ((state.ans[key + '__otro'] || '').trim() ? ATORO_OTRO + ': ' + state.ans[key + '__otro'].trim() : '')
+      : value;
+    state.copied = false;
+    saveLocal();
+    // Aquí sí hace falta un render() completo: elegir "Otro" agrega o quita
+    // el textarea de texto libre, así que no basta con marcar el botón.
+    render();
   }
 });
 el.qwrap.addEventListener('input', ev => {
@@ -609,6 +661,14 @@ el.qwrap.addEventListener('input', ev => {
     // así que el foco y el cursor se quedan tal cual sin necesidad de ningún
     // truco para restaurarlos.
     setAnswer(ev.target.dataset.key, ev.target.value);
+  } else if (ev.target.tagName === 'TEXTAREA' && ev.target.dataset.otroKey) {
+    const key = ev.target.dataset.otroKey;
+    const text = ev.target.value;
+    state.ans[key + '__otro'] = text;
+    state.ans[key] = text.trim() ? ATORO_OTRO + ': ' + text.trim() : '';
+    state.copied = false;
+    saveLocal();
+    refreshValidity();
   }
 });
 
